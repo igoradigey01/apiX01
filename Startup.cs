@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Options;
 using AuthLib;
-//using ShopDbLib.Models;
+using ShopDbLib.Models;
 using Microsoft.AspNetCore.HttpOverrides;
 
 
