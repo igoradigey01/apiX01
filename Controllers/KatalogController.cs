@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using DbClassLib.Models;
-using AuthApi.Model; 
+using ShopDbLib.Models;
+using WebShopAPI.Model; 
 using Microsoft.AspNetCore.Authorization;
-namespace AuthApi.Controllers
+namespace WebShopAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -17,9 +17,8 @@ namespace AuthApi.Controllers
             _repository = repository;
 
         }
-        [HttpGet]
-        [Route("Type")]
-        public IEnumerable<Katalog> ProductTypes()
+        [HttpGet]        
+        public IEnumerable<Katalog> Katalogs()
         {
             return _repository.GetKatalogs().ToList();
             //  throw new Exception("NOt Implimetn Exception");

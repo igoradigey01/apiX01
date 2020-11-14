@@ -4,26 +4,29 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using DbClassLib.Models;
+using WebShopAPI.Model;
+using ShopDbLib.Models;
 
-    
-namespace AuthApi.Model
+namespace WebShopAPI.Model
 {
-public class KatalogRepository
-{
-     private readonly MyShopContext _db;
+    public class KatalogRepository
+    {
+        private readonly AppDbContext _db;
 
-     public  KatalogRepository( 
-         MyShopContext  db
-         )
-    { 
-        _db=db;
+        public KatalogRepository(
+            AppDbContext db
+            )
+        {
+            _db = db;
+        }
+
+        public IQueryable<Katalog> GetKatalogs()
+        {
+            Console.WriteLine("Create -----------      GetProductTypes() ---------- Start->");
+          //  throw new Exception("not implimetn exeption 14.11.20");
+          return _db.Katalog;
+        }
+        
     }
-     
-    public IQueryable<Katalog> GetKatalogs(){
-         Console.WriteLine("Create -----------      GetProductTypes() ---------- Start->");
-        return _db.Katalog ;
-    }
-}
 
 }

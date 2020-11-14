@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using AuthApi.Model;
+using WebShopAPI.Model;
 //-----------------
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authorization;
 
 
-namespace AuthApi.Controllers
+namespace WebShopAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]

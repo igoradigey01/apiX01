@@ -8,17 +8,19 @@ using Microsoft.EntityFrameworkCore;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using System;
 using System.Text;
-using AuthApi.Model;
+using WebShopAPI.Model;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Options;
 using AuthLib;
+//using ShopDbLib.Models;
 using Microsoft.AspNetCore.HttpOverrides;
 
 
 
 
-namespace AuthApi
+
+namespace WebShopAPI
 {
     public class Startup
     {
@@ -37,9 +39,11 @@ namespace AuthApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<AuthRepository>();
-            services.AddTransient<AuthApi.Model.KatalogRepository>();
+            services.AddTransient<KatalogRepository>();
+
             services.AddControllers();
-           services.AddCors(
+
+             services.AddCors(
                opshions=>opshions.AddDefaultPolicy(builder=>{
                builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
            })
@@ -49,17 +53,19 @@ namespace AuthApi
         var authConfig=Configuration.GetSection("Auth");
         var connectString=Configuration["ConnectStringLocal"];
 
-       // Console.WriteLine("startup file --connect string"+connectString);
-        //Console.WriteLine("connectString -val--"+connectString);
+       
         
-           services.AddDbContext<AppDbContext>(options=>options.UseMySql(connectString,mysqlOptions =>
+             services.AddDbContext<AppDbContext>(options=>options.UseMySql(connectString,mysqlOptions =>
         {
             mysqlOptions
                 .ServerVersion(new Version(8, 0, 0), ServerType.MySql);
         }));
+           
+            
+
             services.Configure<AuthLib.AuthOptions>(authConfig);
 
-         var sp = services.BuildServiceProvider();
+               var sp = services.BuildServiceProvider();
 
     // Resolve the services from the service provider
    // var fooService = sp.GetService<IFooService>();
@@ -137,36 +143,6 @@ namespace AuthApi
         });
         }
 
-        public static string GetConnetionStringDB(){
-
-          // задаетсля в двух местах - по другому не работает
-          // created one 07.11.2020
-       throw new Exception("NOt Implimetn Exception"); 
-           // return 
-            //  "server=localhost;port=3306;UserId=root;Password=;database=AuthUserDB;"; // -LOCAL HOST CONNECT
-           //  "server=db;port=3306;UserId=root;Password=;database=AuthUserDB;"; // DOCKER-COMPOSE CONNECT
-          //  Configuration.GetConnectionString("BloggingDatabase");
-              /*
-
-             string server=configuration["ConnectionString:server"];
-                string userId=configuration["ConnectionString:UserId"];
-                string password=configuration["ConnectionString:Password"];
-                  string database=configuration["ConnectionString:database"];
-                  //------------------------------------------------
-            StringBuilder connectionString = new StringBuilder("server=");
-                       
-            connectionString.Append(server);
-            connectionString.Append(";UserId=");
-            connectionString.Append(userId);
-            connectionString.Append(";Password=");
-            connectionString.Append(password);
-            connectionString.Append(";database=");
-            connectionString.Append(database);
-            Console.WriteLine("connectionString:"+connectionString.ToString());
-            
-                //optionsBuilder.UseMySql();
-              //optionsBuilder.UseMySql(connectionString.ToString());
-              */
-        }
+     
     }
 }

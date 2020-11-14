@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 
-namespace AuthApi.Model
+namespace WebShopAPI.Model
 {
     // Аунтефикация Auth------------------------  
 public interface IUser{

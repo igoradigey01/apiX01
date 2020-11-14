@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-namespace AuthApi.Model
+namespace WebShopAPI.Model
 {
 public class AuthRepository
 {
