@@ -29,9 +29,10 @@ namespace WebShopAPI.Model
          public async Task<bool> Add(Katalog item){             
                 
                // db.Users.Add(user);
-              _db.Katalog.Add(item);
+             await _db.Katalog.AddAsync(item);  
               int i=  await _db.SaveChangesAsync() ;
-             //   Console.WriteLine("async Task<bool> Add(Katalog item)-----------"+i.ToString());
+            
+            //  Console.WriteLine("async Task<bool> Add(Katalog item)-----------"+i.ToString()+"_db.Entry.State--"+_db.Entry(item).State.ToString());
 
               if(i!=0)   return true;
               else return false;          
@@ -40,14 +41,25 @@ namespace WebShopAPI.Model
 
           public async Task< bool> Update(Katalog item){
              //  throw new Exception("NOt Implimetn Exception");
-               
-               if (!_db.Katalog.Any(x => x.Id ==item.Id))
+           //   Console.WriteLine("async Task<bool> Update(Katalog item)------_db.Kagalog.Any-----"+item.Id.ToString()+" "+item.Name);
+             
+             Katalog selectItem= await _db.Katalog.FirstOrDefaultAsync(x=>x.Id==item.Id);
+            
+             
+               if (selectItem==null)
             {
                 return false;
             }
-           Console.WriteLine("async Task<bool> Update(Katalog item)-----------"+item.Id.ToString()+" "+item.Name);
- 
-           _db.Katalog.Update(item);
+       //   Console.WriteLine("async Task<bool> Update(Katalog item)-----------"+item.Id.ToString()+" "+item.Name);
+                if(selectItem.Name.Trim()==item.Name.Trim())
+                {
+              //      Console.WriteLine("async Task<bool> Update(Katalog item)-if(n==name)----------"+item.Id.ToString()+" "+item.Name);
+                    return true;
+                }
+                selectItem.Name=item.Name;
+                
+           _db.Katalog.Update(selectItem);
+        
          int i=   await _db.SaveChangesAsync();
            if(i!=0){
                return true;
