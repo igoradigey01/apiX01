@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace WebShopAPI.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class VersionController : ControllerBase
     {
         

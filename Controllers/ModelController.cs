@@ -1,40 +1,52 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShopDbLib.Models;
 using WebShopAPI.Model; 
 using Microsoft.AspNetCore.Authorization;
-using System.Threading.Tasks;
+
+
+
 namespace WebShopAPI.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
-    public class KatalogController : ControllerBase
+    [ApiController]    
+    public class ModelController : ControllerBase
     {
-        private readonly KatalogRepository _repository;
-        public KatalogController(KatalogRepository repository)
+        
+        private readonly ModelRepository _repository;
+        public ModelController(ModelRepository repository)
         {
             _repository = repository;
 
         }
         [HttpGet]        
-        public async Task< IEnumerable<Katalog>> Get()
+        public async Task< IEnumerable<ShopDbLib.Models.Model>> Get()
         {
             return await _repository.Get();
+            //  throw new Exception("NOt Implimetn Exception");
+        }
+        [HttpGet("{idKatalog}")]
+        public async Task<IEnumerable<ShopDbLib.Models.Model>> Get(int idKatalog){
+          return await _repository.Get(idKatalog);
             //  throw new Exception("NOt Implimetn Exception");
         }
 
 
         // api/katalog (post) создать
         [HttpPost]
-        public async Task< ActionResult<Katalog>> Post(Katalog item)
+        public async Task< ActionResult<ShopDbLib.Models.Model>> Post(ShopDbLib.Models.Model item)
         {
             if (item == null)
             {
                 return BadRequest();
             }
-          // Console.WriteLine("Task< ActionResult<Katalog>> Post(Katalog item)----"+item.Name +"-"+item.Id+"-"+item.Model);
+           Console.WriteLine("Task< ActionResult<Model>> Post(Model item)----"+item.Name +"-"+item.Id+"-"+item.KatalogId);
+          
+         
           if( await _repository.Add(item))
           {           
             return Ok(item);
@@ -46,7 +58,7 @@ namespace WebShopAPI.Controllers
 
         // PUT api/katalog/ (put) -изменить
         [HttpPut("{id}")]
-        public async Task< ActionResult<Katalog>> Put(int id, Katalog item)
+        public async Task< ActionResult<ShopDbLib.Models.Model>> Put(int id, ShopDbLib.Models.Model item)
         {
 
             if (item == null)
@@ -66,7 +78,7 @@ namespace WebShopAPI.Controllers
 
         // DELETE api/katalog/5
         [HttpDelete("{id}")]
-        public async Task< ActionResult<Katalog>> Delete(int id)
+        public async Task< ActionResult<ShopDbLib.Models.Model>> Delete(int id)
         {
            if (!await _repository.Delete(id))
             {
@@ -77,12 +89,5 @@ namespace WebShopAPI.Controllers
 
 
 
-        
-
     }
-
-
-
-
-
 }

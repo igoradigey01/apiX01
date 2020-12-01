@@ -40,6 +40,7 @@ namespace WebShopAPI
         {
             services.AddTransient<AuthRepository>();
             services.AddTransient<KatalogRepository>();
+            services.AddTransient<ModelRepository>();
 
             services.AddControllers();
 

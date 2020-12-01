@@ -16,7 +16,7 @@ using ShopDbLib.Models;
 namespace WebShopAPI.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
             const  string _roleAdmin="Admin";
