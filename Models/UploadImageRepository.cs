@@ -66,7 +66,7 @@ namespace WebShopAPI.Model
 
     }
     private async void WriteNewFile(string pathPhoto,IFormFile filePhoto){
-         throw new Exception("NOt Implimetn Exception");
+     //    throw new Exception("NOt Implimetn Exception");
          if (filePhoto != null)
             {
                 // путь к папке Files
