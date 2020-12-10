@@ -1,0 +1,50 @@
+using Microsoft.AspNetCore.Http;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
+
+namespace WebShopAPI.Model
+{
+    public class ModelSerialize : IValidatableObject
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int IdKatalog { get; set; }
+
+        public float Price { get; set; }
+        public float Markup { get; set; }
+        public string Description { get; set; }
+        [Required(ErrorMessage = "Please select a file.")]
+        [DataType(DataType.Upload)]
+       // [MaxFileSize(5* 1024 * 1024)]
+       // [AllowedExtensions(new string[] { ".jpg", ".png" })]
+        public IFormFile Photo { get; set; }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            var photo = ((ModelSerialize)validationContext.ObjectInstance).Photo;
+            var extension = System.IO.Path.GetExtension(photo.FileName);
+            var size = photo.Length;
+
+            if (!extension.ToLower().Equals(".jpg"))
+                yield return new ValidationResult("File extension is not valid.");
+
+           if(size > (5 * 1024 * 1024))
+                yield return new ValidationResult("File size is bigger than 5MB.");
+        }
+
+
+    }
+
+    public class FileToUpload
+    {
+        public string FileName { get; set; }
+        public string FileSize { get; set; }
+        public string FileType { get; set; }
+        public long LastModifiedTime { get; set; }
+        public DateTime LastModifiedDate { get; set; }
+        public string FileAsBase64 { get; set; }
+        public byte[] FileAsByteArray { get; set; }
+    }
+}
+

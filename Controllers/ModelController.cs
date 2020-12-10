@@ -10,19 +10,29 @@ using Microsoft.AspNetCore.Authorization;
 
 
 
+
 namespace WebShopAPI.Controllers
 {
+    
     [Route("api/[controller]")]
     [ApiController]    
     public class ModelController : ControllerBase
     {
         
         private readonly ModelRepository _repository;
-        public ModelController(ModelRepository repository)
+         private readonly UploadImageRepository _imageRepository;
+        
+        public ModelController(
+            ModelRepository repository,
+            UploadImageRepository imageRepository
+        )
         {
             _repository = repository;
+            _imageRepository=imageRepository;           
 
         }
+
+
         [HttpGet]        
         public async Task< IEnumerable<ShopDbLib.Models.Model>> Get()
         {
@@ -38,8 +48,21 @@ namespace WebShopAPI.Controllers
 
         // api/katalog (post) создать
         [HttpPost]
-        public async Task< ActionResult<ShopDbLib.Models.Model>> Post(ShopDbLib.Models.Model item)
-        {
+        public async Task< ActionResult< ModelSerialize>> Post( ModelSerialize itemSerialize)
+        {   ShopDbLib.Models.Model item= new ShopDbLib.Models.Model();
+            
+             // throw new Exception("NOt Implimetn Exception");
+             item.Id=0;
+             item.Name=itemSerialize.Name;
+             item.KatalogId=itemSerialize.IdKatalog;
+             item.Price=itemSerialize.Price;
+             item.Markup=itemSerialize.Markup;
+             item.Description=itemSerialize.Description;
+             item.Image=
+             _imageRepository.GetImgPathNewName(
+                  itemSerialize.Photo.Name
+                  );
+            //  _imageRepository.Save(item.Image,itemSerialize.Photo);
             if (item == null)
             {
                 return BadRequest();
@@ -47,7 +70,7 @@ namespace WebShopAPI.Controllers
            Console.WriteLine("Task< ActionResult<Model>> Post(Model item)----"+item.Name +"-"+item.Id+"-"+item.KatalogId);
           
          
-          if( await _repository.Add(item))
+          if( await _repository.Add(item,_imageRepository.Save,itemSerialize.Photo))
           {           
             return Ok(item);
           }
@@ -58,22 +81,25 @@ namespace WebShopAPI.Controllers
 
         // PUT api/katalog/ (put) -изменить
         [HttpPut("{id}")]
-        public async Task< ActionResult<ShopDbLib.Models.Model>> Put(int id, ShopDbLib.Models.Model item)
+        public async Task< ActionResult<ModelSerialize>> Put(int id, ModelSerialize itemSerialize)
         {
+           // throw new Exception("NOt Implimetn Exception");
+           // ShopDbLib.Models.Model item
 
-            if (item == null)
+            if (itemSerialize == null)
             {
                 return BadRequest();
             }
-            if(id!=item.Id) return BadRequest();
+            if(id!=itemSerialize.Id) return BadRequest();
             
-            if (!await _repository.Update(item))
+            if (!await _repository.Update(itemSerialize,_imageRepository.Update,itemSerialize.Photo))
             {
                 return NotFound(" item в субд не существует или ошибка связанная с обновлением в субд");
             }
- 
+
+  
             
-            return Ok(item);
+            return Ok(itemSerialize);
         }
 
         // DELETE api/katalog/5
@@ -86,7 +112,8 @@ namespace WebShopAPI.Controllers
             }
             return Ok();
         }
-
+      
+     
 
 
     }

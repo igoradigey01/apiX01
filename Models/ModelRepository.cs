@@ -4,12 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using  Microsoft.EntityFrameworkCore;
 using ShopDbLib.Models;
+using Microsoft.AspNetCore.Http;
+
 namespace WebShopAPI.Model
 {
     public class ModelRepository
     {
         private readonly AppDbContext _db;
-
+       public     delegate void  Save(string imgPath,IFormFile photo);
         public ModelRepository( AppDbContext db )
         {
             _db = db;
@@ -31,10 +33,10 @@ namespace WebShopAPI.Model
         }
 
       
-      public async Task<bool> Add(ShopDbLib.Models.Model item){             
+      public async Task<bool> Add(ShopDbLib.Models.Model item,Save _del,IFormFile photo){             
                 
                // db.Users.Add(user);
-               if(item.KatalogId==null){
+               if(item.KatalogId==-1){
                 return false;
             }
                // Проверить на уникольность ???
@@ -45,14 +47,16 @@ namespace WebShopAPI.Model
             
             //  Console.WriteLine("async Task<bool> Add(Katalog item)-----------"+i.ToString()+"_db.Entry.State--"+_db.Entry(item).State.ToString());
 
-              if(i!=0)   return true;
+              if(i!=0)  {
+                 _del.Invoke(selectItem.Image,photo);
+                 return true;}
               else return false;          
                 
          }
 
-      public async Task< bool> Update(ShopDbLib.Models.Model item){
+      public async Task< bool> Update(ModelSerialize itemSerialize,Save _del,IFormFile photo){
                      
-             ShopDbLib.Models.Model selectItem= await _db.Model.FirstOrDefaultAsync(x=>x.Id==item.Id);
+             ShopDbLib.Models.Model selectItem= await _db.Model.FirstOrDefaultAsync(x=>x.Id==itemSerialize.Id);
           
           
             
@@ -62,27 +66,27 @@ namespace WebShopAPI.Model
                 return false;
             }
                  // проверка на уникльность
-              var selectUniItem = await      _db.Model.FirstOrDefaultAsync(x=>x.Name==item.Name);
+              var selectUniItem = await      _db.Model.FirstOrDefaultAsync(x=>x.Name==itemSerialize.Name);
              if(selectUniItem!=null) return false; 
              
-            if(   selectItem.Image!=item.Image)
-            {
-              selectItem.Image=item.Image;
-            }
+            
            
-            if(selectItem.KatalogId!=item.KatalogId){
-              selectItem.KatalogId=item.KatalogId;
+            if(selectItem.KatalogId!=itemSerialize.IdKatalog){
+              selectItem.KatalogId=itemSerialize.IdKatalog;
             }
 
-             selectItem.Katalog=item.Katalog;
+             
 
-             if(selectItem.Name.Trim()!=item.Name.Trim()){
-               selectItem.Name=item.Name;
+             if(selectItem.Name.Trim()!=itemSerialize.Name.Trim()){
+               selectItem.Name=itemSerialize.Name.Trim();
              }
-             if(selectItem.Price!=item.Price){
-               selectItem.Price=item.Price;
+             if(selectItem.Price!=itemSerialize.Price){
+               selectItem.Price=itemSerialize.Price;
              }
-             selectItem.Nomenclatura=item.Nomenclatura;
+
+            
+
+            
                 
  //throw new Exception("not implimetn exeption 18.11.20");
                        
@@ -91,6 +95,7 @@ namespace WebShopAPI.Model
         
          int i=   await _db.SaveChangesAsync();
            if(i!=0){
+             _del.Invoke(selectItem.Image,photo);
                return true;
            }
            return false;

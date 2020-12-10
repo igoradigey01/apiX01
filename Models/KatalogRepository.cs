@@ -11,12 +11,15 @@ namespace WebShopAPI.Model
     public class KatalogRepository
     {
         private readonly AppDbContext _db;
+       
 
         public KatalogRepository(
             AppDbContext db
+            
             )
         {
             _db = db;
+           
         }
 
         public async Task< IEnumerable<Katalog>> Get()
