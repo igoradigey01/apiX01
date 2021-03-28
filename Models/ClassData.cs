@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace WebShopAPI.Model
 {
-    public class ModelSerialize : IValidatableObject
+    public class ModelSerialize  : IValidatableObject
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -14,8 +14,8 @@ namespace WebShopAPI.Model
         public float Price { get; set; }
         public float Markup { get; set; }
         public string Description { get; set; }
-        [Required(ErrorMessage = "Please select a file.")]
-        [DataType(DataType.Upload)]
+       [Required(ErrorMessage = "Please select a file.")]
+       
        // [MaxFileSize(5* 1024 * 1024)]
        // [AllowedExtensions(new string[] { ".jpg", ".png" })]
         public IFormFile Photo { get; set; }

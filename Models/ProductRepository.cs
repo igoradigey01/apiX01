@@ -11,7 +11,7 @@ namespace WebShopAPI.Model
     public class ModelRepository
     {
         private readonly AppDbContext _db;
-       public     delegate void  Save(string imgPath,IFormFile photo);
+      // public     delegate void  Save(string imgPath,IFormFile photo);
         public ModelRepository( AppDbContext db )
         {
             _db = db;
@@ -32,29 +32,40 @@ namespace WebShopAPI.Model
           
         }
 
+        public bool NameUnique(string name){
+           var selectItem =     _db.Model.FirstOrDefault(x=>x.Name==name);
+            // Console.WriteLine((selectItem == null ).ToString()+"selectItem ==null");            
+             
+              if(selectItem!=null) return false; 
+              return true;
+
+
+        }
+
       
-      public async Task<bool> Add(ShopDbLib.Models.Model item,Save _del,IFormFile photo){             
+      public async Task<bool> Add(ShopDbLib.Models.Model item){             
                 
                // db.Users.Add(user);
                if(item.KatalogId==-1){
                 return false;
             }
                // Проверить на уникольность ???
-             var selectItem = await      _db.Model.FirstOrDefaultAsync(x=>x.Name==item.Name);
-             if(selectItem!=null) return false; 
+            
              await _db.Model.AddAsync(item);  
               int i=  await _db.SaveChangesAsync() ;
             
             //  Console.WriteLine("async Task<bool> Add(Katalog item)-----------"+i.ToString()+"_db.Entry.State--"+_db.Entry(item).State.ToString());
 
               if(i!=0)  {
-                 _del.Invoke(selectItem.Image,photo);
+              ///  Console.WriteLine("async Task<bool> Add(Katalog item)--- _del.Invoke-- bigin"+"_dev==null"+(_del==null).ToString());
+             // _del(selectItem.Image,photo); делегат не работаете  error null async metod
+              //   Console.WriteLine("async Task<bool> Add(Katalog item)--- _del.Invoke-- end");
                  return true;}
               else return false;          
                 
          }
 
-      public async Task< bool> Update(ModelSerialize itemSerialize,Save _del,IFormFile photo){
+      public async Task< bool> Update(ModelSerialize itemSerialize,IFormFile photo){
                      
              ShopDbLib.Models.Model selectItem= await _db.Model.FirstOrDefaultAsync(x=>x.Id==itemSerialize.Id);
           
@@ -95,7 +106,7 @@ namespace WebShopAPI.Model
         
          int i=   await _db.SaveChangesAsync();
            if(i!=0){
-             _del.Invoke(selectItem.Image,photo);
+         //    _del.Invoke(selectItem.Image,photo);
                return true;
            }
            return false;

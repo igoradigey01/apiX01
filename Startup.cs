@@ -53,9 +53,9 @@ namespace WebShopAPI
            );
         
         var authConfig=Configuration.GetSection("Auth");
-        var connectString=Configuration["ConnectStringLocal"];
-
-       
+       var connectString=Configuration["ConnectStringLocal"];
+           //  var connectString=Configuration["ConnectStringDocker"];
+      
         
              services.AddDbContext<AppDbContext>(options=>options.UseMySql(connectString,mysqlOptions =>
         {
@@ -135,6 +135,8 @@ namespace WebShopAPI
 });
             app.UseAuthentication();
             app.UseAuthorization();
+            //------------20.12.20-----------
+            app.UseStaticFiles();
 
           
 

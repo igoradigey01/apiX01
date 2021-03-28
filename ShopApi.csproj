@@ -1,10 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.6"/>
+    <PackageReference Include="Magick.NET.Core-Q8" Version="7.0.5.900" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.6" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AuthLib\AuthLib.csproj"/>
-    <ProjectReference Include="..\ShopDbLib\ShopDbLib.csproj"/>
+    <ProjectReference Include="..\AuthLib\AuthLib.csproj" />
+    <ProjectReference Include="..\ShopDbLib\ShopDbLib.csproj" />
   </ItemGroup>
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>

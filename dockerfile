@@ -9,4 +9,4 @@ COPY ./published .
 
 EXPOSE 80
 
-ENTRYPOINT ["dotnet", "AuthApi.dll"]
+ENTRYPOINT ["dotnet", "ShopApi.dll"]
