@@ -5,7 +5,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AuthLib\AuthLib.csproj" />
-    <ProjectReference Include="..\ShopDbLib\ShopDbLib.csproj" />
+    <ProjectReference Include="..\ShopDbLibNew\ShopDbLibNew.csproj" />
   </ItemGroup>
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>

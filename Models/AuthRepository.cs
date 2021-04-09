@@ -4,17 +4,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using ShopDbLib.Models;
+using ShopDbLibNew;
 
 namespace WebShopAPI.Model
 {
 public class AuthRepository
 {
     //класс-репозиторий напрямую обращается к контексту базы данных
-    private readonly AppDbContext context;
+    private readonly MyShopContext context;
 
 
-    public  AuthRepository(AppDbContext context)
+    public  AuthRepository(MyShopContext context)
     {
         this.context = context;
     }

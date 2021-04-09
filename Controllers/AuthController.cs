@@ -10,7 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authorization;
-using ShopDbLib.Models;
+using ShopDbLibNew;
 
 
 namespace WebShopAPI.Controllers

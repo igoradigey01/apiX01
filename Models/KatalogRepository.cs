@@ -4,17 +4,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using  Microsoft.EntityFrameworkCore;
 
-using ShopDbLib.Models;
+using ShopDbLibNew;
 
 namespace WebShopAPI.Model
 {
     public class KatalogRepository
     {
-        private readonly AppDbContext _db;
+        private readonly MyShopContext _db;
        
 
         public KatalogRepository(
-            AppDbContext db
+            MyShopContext db
             
             )
         {

@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Options;
 using AuthLib;
-using ShopDbLib.Models;
+using ShopDbLibNew;
 using Microsoft.AspNetCore.HttpOverrides;
 
 
@@ -40,8 +40,9 @@ namespace WebShopAPI
         {
             services.AddTransient<AuthRepository>();
             services.AddTransient<KatalogRepository>();
-            services.AddTransient<ModelRepository>();
+            services.AddTransient<ProductRepository>();
             services.AddTransient<UploadImageRepository>();
+            services.AddTransient<TypeProductRepository>();
 
             services.AddControllers();
 
@@ -53,11 +54,11 @@ namespace WebShopAPI
            );
         
         var authConfig=Configuration.GetSection("Auth");
-       var connectString=Configuration["ConnectStringLocal"];
+      var connectString=Configuration["ConnectStringLocal"];
            //  var connectString=Configuration["ConnectStringDocker"];
       
         
-             services.AddDbContext<AppDbContext>(options=>options.UseMySql(connectString,mysqlOptions =>
+             services.AddDbContext<MyShopContext>(options=>options.UseMySql(connectString,mysqlOptions =>
         {
             mysqlOptions
                 .ServerVersion(new Version(8, 0, 0), ServerType.MySql);

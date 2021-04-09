@@ -3,37 +3,37 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using  Microsoft.EntityFrameworkCore;
-using ShopDbLib.Models;
+using ShopDbLibNew;
 using Microsoft.AspNetCore.Http;
 
 namespace WebShopAPI.Model
 {
-    public class ModelRepository
+    public class ProductRepository
     {
-        private readonly AppDbContext _db;
+        private readonly MyShopContext _db;
       // public     delegate void  Save(string imgPath,IFormFile photo);
-        public ModelRepository( AppDbContext db )
+        public ProductRepository( MyShopContext db )
         {
             _db = db;
         }
 
-      public async Task< IEnumerable<ShopDbLib.Models.Model>> Get()
+      public async Task< IEnumerable<ShopDbLibNew.Product>> Get()
         {
              
           //  throw new Exception("not implimetn exeption 14.11.20");
-          return  await _db.Model.ToListAsync();
+          return  await _db.Product.ToListAsync();
           
         }
 
-      public async Task< IEnumerable<ShopDbLib.Models.Model>> Get(int katalogId)
+      public async Task< IEnumerable<Product>> Get(int katalogId)
         {
              
-          return  await _db.Model.Where(p=>p.KatalogId==katalogId).ToListAsync();
+          return  await _db.Product.Where(p=>p.KatalogId==katalogId).ToListAsync();
           
         }
 
         public bool NameUnique(string name){
-           var selectItem =     _db.Model.FirstOrDefault(x=>x.Name==name);
+           var selectItem =     _db.Product.FirstOrDefault(x=>x.Name==name);
             // Console.WriteLine((selectItem == null ).ToString()+"selectItem ==null");            
              
               if(selectItem!=null) return false; 
@@ -43,7 +43,7 @@ namespace WebShopAPI.Model
         }
 
       
-      public async Task<bool> Add(ShopDbLib.Models.Model item){             
+      public async Task<bool> Add(Product item){             
                 
                // db.Users.Add(user);
                if(item.KatalogId==-1){
@@ -51,7 +51,7 @@ namespace WebShopAPI.Model
             }
                // Проверить на уникольность ???
             
-             await _db.Model.AddAsync(item);  
+             await _db.Product.AddAsync(item);  
               int i=  await _db.SaveChangesAsync() ;
             
             //  Console.WriteLine("async Task<bool> Add(Katalog item)-----------"+i.ToString()+"_db.Entry.State--"+_db.Entry(item).State.ToString());
@@ -67,7 +67,7 @@ namespace WebShopAPI.Model
 
       public async Task< bool> Update(ModelSerialize itemSerialize,IFormFile photo){
                      
-             ShopDbLib.Models.Model selectItem= await _db.Model.FirstOrDefaultAsync(x=>x.Id==itemSerialize.Id);
+            Product selectItem= await _db.Product.FirstOrDefaultAsync(x=>x.Id==itemSerialize.Id);
           
           
             
@@ -77,7 +77,7 @@ namespace WebShopAPI.Model
                 return false;
             }
                  // проверка на уникльность
-              var selectUniItem = await      _db.Model.FirstOrDefaultAsync(x=>x.Name==itemSerialize.Name);
+              var selectUniItem = await      _db.Product.FirstOrDefaultAsync(x=>x.Name==itemSerialize.Name);
              if(selectUniItem!=null) return false; 
              
             
@@ -102,7 +102,7 @@ namespace WebShopAPI.Model
  //throw new Exception("not implimetn exeption 18.11.20");
                        
                 
-           _db.Model.Update(selectItem);
+           _db.Product.Update(selectItem);
         
          int i=   await _db.SaveChangesAsync();
            if(i!=0){
@@ -116,12 +116,12 @@ namespace WebShopAPI.Model
       public async Task< bool> Delete(int id){
              
               
-               ShopDbLib.Models.Model item = _db.Model.FirstOrDefault(x => x.Id == id);
+               Product item = _db.Product.FirstOrDefault(x => x.Id == id);
             if (item == null)
             {
                 return false;
             }
-            _db.Model.Remove(item);
+            _db.Product.Remove(item);
            int i= await _db.SaveChangesAsync();
            if(i!=0) return true;
            else return false;              

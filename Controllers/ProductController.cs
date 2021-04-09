@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ShopDbLib.Models;
+using ShopDbLibNew;
 using WebShopAPI.Model;
 using Microsoft.AspNetCore.Authorization;
 using System.IO;
@@ -17,14 +17,14 @@ namespace WebShopAPI.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
-    public class ModelController : ControllerBase
+    public class ProductController : ControllerBase
     {
 
-        private readonly ModelRepository _repository;
+        private readonly ProductRepository _repository;
         private readonly UploadImageRepository _imageRepository;
 
-        public ModelController(
-            ModelRepository repository,
+        public ProductController(
+            ProductRepository repository,
             UploadImageRepository imageRepository
         )
         {
@@ -35,13 +35,13 @@ namespace WebShopAPI.Controllers
 
 
         [HttpGet]
-        public async Task<IEnumerable<ShopDbLib.Models.Model>> Get()
+        public async Task<IEnumerable<Product>> Get()
         {
             return await _repository.Get();
             //  throw new Exception("NOt Implimetn Exception");
         }
         [HttpGet("{idKatalog}")]
-        public async Task<IEnumerable<ShopDbLib.Models.Model>> Get(int idKatalog)
+        public async Task<IEnumerable<Product>> Get(int idKatalog)
         {
             return await _repository.Get(idKatalog);
             //  throw new Exception("NOt Implimetn Exception");
@@ -50,9 +50,9 @@ namespace WebShopAPI.Controllers
 
         // api/katalog (post) создать
         [HttpPost]
-        public async Task<ActionResult<ShopDbLib.Models.Model>> Post()
+        public async Task<ActionResult<Product>> Post()
         {
-            ShopDbLib.Models.Model item = new ShopDbLib.Models.Model();
+           Product item = new Product();
           //  Console.WriteLine("api/katalog (post) создать --------");
 
            
@@ -77,6 +77,7 @@ namespace WebShopAPI.Controllers
                
                 
                 item.KatalogId=int.Parse( form["idKatalog"]);
+                item.TypeProductId=int.Parse(form[""]);
                 item.Price=int.Parse( form["price"]);
                 item.Markup=int.Parse(form["markup"]);
                 item.Description=form["description"];
@@ -141,7 +142,7 @@ namespace WebShopAPI.Controllers
 
         // DELETE api/katalog/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<ShopDbLib.Models.Model>> Delete(int id)
+        public async Task<ActionResult<Product>> Delete(int id)
         {
             if (!await _repository.Delete(id))
             {
