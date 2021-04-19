@@ -43,6 +43,7 @@ namespace WebShopAPI
             services.AddTransient<ProductRepository>();
             services.AddTransient<UploadImageRepository>();
             services.AddTransient<TypeProductRepository>();
+            services.AddTransient<ProductItemRepository>();
 
             services.AddControllers();
 

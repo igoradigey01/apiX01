@@ -32,15 +32,16 @@ namespace WebShopAPI.Controllers
         {
             if (item == null)
             {
-                return BadRequest();
+                return BadRequest("angular form data ==null");
             }
           // Console.WriteLine("Task< ActionResult<Katalog>> Post(Katalog item)----"+item.Name +"-"+item.Id+"-"+item.Model);
-          if( await _repository.Add(item))
+              var flag=await _repository.Add(item);
+          if( flag.Flag)
           {           
             return Ok(item);
           }
           else{
-              return BadRequest("Ошибка субд,запись в бд не создана!");
+              return BadRequest(flag.Message);
           }
         }
 
@@ -54,23 +55,27 @@ namespace WebShopAPI.Controllers
                 return BadRequest();
             }
             if(id!=item.Id) return BadRequest();
-            
-            if (!await _repository.Update(item))
+            var flag=await _repository.Update(item);
+            if (flag.Flag)
             {
-                return NotFound(" item в субд не существует или ошибка связанная с обновлением в субд");
+             Katalog katalog =   flag.Item as Katalog;
+             Console.WriteLine(katalog.Name +"-----"+katalog.Id);
+                return Ok(katalog);
+                
             }
  
             
-            return Ok(item);
+            return BadRequest(flag.Message);
         }
 
         // DELETE api/katalog/5
         [HttpDelete("{id}")]
-        public async Task< ActionResult<Katalog>> Delete(int id)
+        public async Task< ActionResult> Delete(int id)
         {
-           if (!await _repository.Delete(id))
+            var flagValid=await _repository.Delete(id);
+           if (!flagValid.Flag)
             {
-                return NotFound();
+                return BadRequest(flagValid.Message);
             }
             return Ok();
         }

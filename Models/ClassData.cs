@@ -5,7 +5,15 @@ using System.Collections.Generic;
 
 namespace WebShopAPI.Model
 {
-    public class ModelSerialize  : IValidatableObject
+    // class передачи сообщений Validation между repository adn controllers
+    public class FlagValid
+    {
+        public bool Flag { get; set; }
+        public string Message { get; set; }
+        public object Item {get;set;}  
+    }
+
+    public class ModelSerialize : IValidatableObject
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -14,10 +22,10 @@ namespace WebShopAPI.Model
         public float Price { get; set; }
         public float Markup { get; set; }
         public string Description { get; set; }
-       [Required(ErrorMessage = "Please select a file.")]
-       
-       // [MaxFileSize(5* 1024 * 1024)]
-       // [AllowedExtensions(new string[] { ".jpg", ".png" })]
+        [Required(ErrorMessage = "Please select a file.")]
+
+        // [MaxFileSize(5* 1024 * 1024)]
+        // [AllowedExtensions(new string[] { ".jpg", ".png" })]
         public IFormFile Photo { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
@@ -29,7 +37,7 @@ namespace WebShopAPI.Model
             if (!extension.ToLower().Equals(".jpg"))
                 yield return new ValidationResult("File extension is not valid.");
 
-           if(size > (5 * 1024 * 1024))
+            if (size > (5 * 1024 * 1024))
                 yield return new ValidationResult("File size is bigger than 5MB.");
         }
 
@@ -46,5 +54,7 @@ namespace WebShopAPI.Model
         public string FileAsBase64 { get; set; }
         public byte[] FileAsByteArray { get; set; }
     }
+
+
 }
 

@@ -16,7 +16,7 @@ namespace WebShopAPI.Controllers
         //-----------------------------
         string[] _l=new[]{"один","два","Три-test"};
 
-        string _vertionName="Test Katalog v1.3(28.03.21)";
+        string _vertionName="Test Katalog v1.3(10.04.21)";
         public VersionController(){
          // _repository=repository;
 
