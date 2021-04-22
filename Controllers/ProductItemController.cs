@@ -13,7 +13,7 @@ namespace WebShopAPI.Controllers
 {
     //товарная позиция
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     public class ProductItemController : ControllerBase //товарная позиция
     {
         private readonly ProductItemRepository _repository;
@@ -30,13 +30,15 @@ namespace WebShopAPI.Controllers
 
 
         // воозвращает path-фото колекция (детарльное фото[] Товара)
-        [HttpGet]
+      //---  [Route("api/[controller]/[action]")]--
+        [HttpGet("{id}")]
         public async Task<string[]> GetImages(int idProduct)
         {
             // return "test-Get_TypeProductController";
             //  test_MySql();
             // throw new Exception("NOt Implimetn Exception");
             //  return await _repository.Get();
+            Console.WriteLine("test GetImages ProductItemController"+" --IdProduct--"+idProduct.ToString());
             return await _repository.GetImags(idProduct);
 
         }

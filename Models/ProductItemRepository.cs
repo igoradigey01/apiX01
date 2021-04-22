@@ -22,6 +22,10 @@ namespace WebShopAPI.Model
         {
             //  throw new Exception("NOt Implimetn Exception");
             var imgPaths = _db.Image.Where(p => p.Id == idProduct).Select(i => i.Name);
+            foreach (string i in imgPaths ){
+
+                Console.WriteLine(i);
+            }
 
             return await imgPaths.ToArrayAsync();
 
