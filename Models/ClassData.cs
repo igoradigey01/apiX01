@@ -12,7 +12,14 @@ namespace WebShopAPI.Model
         public string Message { get; set; }
         public object Item {get;set;}  
     }
+    
+    public class VetsionInfo{
+        public string V{get;set;}
+        public string  Description{get;set;}
+    }
+    
 
+/*
     public class ModelSerialize : IValidatableObject
     {
         public int Id { get; set; }
@@ -43,6 +50,7 @@ namespace WebShopAPI.Model
 
 
     }
+    */
 
     public class FileToUpload
     {

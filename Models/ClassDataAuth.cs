@@ -1,14 +1,14 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
-using ShopDbLibNew;
+//using Newtonsoft.Json;
+using ShopDb;
 
 
 namespace WebShopAPI.Model
 {
     // Аунтефикация Auth------------------------  
 
-public class UserSerialize:IUser{
+public class UserSerialize{
   public string Name{get;set;}
   public string Password{get;set;}
   public string Email {get;set;}

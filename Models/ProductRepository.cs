@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using ShopDbLibNew;
+using ShopDb;
 using Microsoft.AspNetCore.Http;
 
 namespace WebShopAPI.Model
@@ -17,24 +17,24 @@ namespace WebShopAPI.Model
             _db = db;
         }
 
-        public async Task<IEnumerable<ShopDbLibNew.Product>> Get()
+        public async Task<IEnumerable<ShopDb.Product>> Get()
         {
 
             //  throw new Exception("not implimetn exeption 14.11.20");
-            return await _db.Product.ToListAsync();
+            return await _db.Products.ToListAsync();
 
         }
 
         public async Task<IEnumerable<Product>> Get(int katalogId)
         {
 
-            return await _db.Product.Where(p => p.KatalogId == katalogId).ToListAsync();
+            return await _db.Products.Where(p => p.KatalogId == katalogId).ToListAsync();
 
         }
 
         public bool NameUnique(string name)
         {
-            var selectItem = _db.Product.FirstOrDefault(x => x.Name == name);
+            var selectItem = _db.Products.FirstOrDefault(x => x.Name == name);
             // Console.WriteLine((selectItem == null ).ToString()+"selectItem ==null");            
 
             if (selectItem != null) return false;
@@ -58,7 +58,7 @@ namespace WebShopAPI.Model
             }
             // Проверить на уникольность ???
 
-            await _db.Product.AddAsync(item);
+            await _db.Products.AddAsync(item);
             int i = await _db.SaveChangesAsync();
 
             //  Console.WriteLine("async Task<bool> Add(Katalog item)-----------"+i.ToString()+"_db.Entry.State--"+_db.Entry(item).State.ToString());
@@ -80,7 +80,7 @@ namespace WebShopAPI.Model
         public async Task<FlagValid> Update(Product item)
         {
 
-            Product selectItem = await _db.Product.FirstOrDefaultAsync(x => x.Id == item.Id);
+            Product selectItem = await _db.Products.FirstOrDefaultAsync(x => x.Id == item.Id);
 
             //   var flagValid=new FlagValid {Flag=false,ErrorMessage=""};
 
@@ -135,12 +135,12 @@ namespace WebShopAPI.Model
         {
 
 
-            Product item = _db.Product.FirstOrDefault(x => x.Id == id);
+            Product item = _db.Products.FirstOrDefault(x => x.Id == id);
             if (item == null)
             {
                 return false;
             }
-            _db.Product.Remove(item);
+            _db.Products.Remove(item);
             int i = await _db.SaveChangesAsync();
             if (i != 0) return true;
             else return false;

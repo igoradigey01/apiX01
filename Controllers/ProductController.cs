@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ShopDbLibNew;
+using ShopDb;
 using WebShopAPI.Model;
 using Microsoft.AspNetCore.Authorization;
 using System.IO;
@@ -21,12 +21,12 @@ namespace WebShopAPI.Controllers
     {
 
         private readonly ProductRepository _repository;
-        
-        private readonly UploadImageRepository _imageRepository;
+
+        private readonly ImageRepository _imageRepository;
 
         public ProductController(
             ProductRepository repository,
-            UploadImageRepository imageRepository
+            ImageRepository imageRepository
         )
         {
             _repository = repository;
@@ -52,6 +52,7 @@ namespace WebShopAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Product>> Post()
         {
+            // throw new Exception("NOt Implimetn Exception");
             Product item = new Product();
             //  Console.WriteLine("api/katalog (post) создать --------");
 
@@ -78,34 +79,39 @@ namespace WebShopAPI.Controllers
             }
 
 
-            item.KatalogId = int.Parse(form["idKatalog"]);
-            item.TypeProductId = int.Parse(form["idTypeProduct"]);
+            item.KatalogId = int.Parse(form["katalogId"]);
+            item.TypeProductId = int.Parse(form["typeProductId"]);
             item.Price = int.Parse(form["price"]);
             item.Markup = int.Parse(form["markup"]);
             item.Description = form["description"];
+            string imgBase64String = form["imageBase64"];
 
-            if (form.Files.Count > 0)
+            if (String.IsNullOrEmpty(imgBase64String))
             {
+                return BadRequest("angular form data item.imageBase64==null ");
 
-                var file = form.Files[0] as IFormFile;
-                //  Console.WriteLine("molel controller post file name---"+file.Name);
-                // var f=file as IFormFile;
-
-                if (file != null)
-                {
-                    var path =
-                    _imageRepository.GetImgPathNewName(
-                         file.Name
-                         );
-
-
-
-                    _imageRepository.Save(path, file);
-                    item.Image = Path.GetFileName(path);
-
-
-                }
             }
+
+            //  var file = form.Files[0] as IFormFile;
+            //  Console.WriteLine("molel controller post file name---"+file.Name);
+
+            var typeFile = "temp.png";
+            var path =
+            _imageRepository.GetImgPathNewName(
+                 typeFile
+                 );
+               string convert = imgBase64String.Replace("data:image/png;base64,", String.Empty);
+            byte[] imgBytes = Convert.FromBase64String(convert);
+
+            _imageRepository.Save(path, imgBytes);
+       //   _imageRepository.SaveBase64Img(path,imgBase64String);
+
+            // _imageRepository.Save(path, file);
+            item.Image = Path.GetFileName(path);
+
+
+
+
             // Console.WriteLine("Task< ActionResult<Model>> Post(Model item)----"+item.Name +"-"+item.Id+"-"+item.KatalogId);
 
 
@@ -119,12 +125,14 @@ namespace WebShopAPI.Controllers
             }
 
 
+
         }
 
         // PUT api/katalog/ (put) -изменить
         [HttpPut("{id}")]
         public async Task<ActionResult<Product>> Put(int id)
         {
+            throw new Exception("NOt Implimetn Exception");
             Product item = new Product();
             IFormCollection form = await Request.ReadFormAsync();
             if (form == null)
@@ -160,7 +168,8 @@ namespace WebShopAPI.Controllers
                     _imageRepository.GetImgPathNewName(
                          file.Name
                          );
-                    _imageRepository.Save(path, file);
+                         
+                    //-----------------          ------------    _imageRepository.Save(path, file);
                     item.Image = Path.GetFileName(path); //????????18.04.21
                 }
             }

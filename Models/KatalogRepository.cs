@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using  Microsoft.EntityFrameworkCore;
 
-using ShopDbLibNew;
+using ShopDb;
 
 namespace WebShopAPI.Model
 {
@@ -26,13 +26,13 @@ namespace WebShopAPI.Model
         {
              
           //  throw new Exception("not implimetn exeption 14.11.20");
-          return await _db.Katalog.ToListAsync();
+          return await _db.Katalogs.ToListAsync();
         }
 
          public async Task<FlagValid> Add(Katalog item){             
                 FlagValid flag=new FlagValid{Flag=false,Message=null};
                // db.Users.Add(user);
-             await _db.Katalog.AddAsync(item);  
+             await _db.Katalogs.AddAsync(item);  
               int i=  await _db.SaveChangesAsync() ;
             
             //  Console.WriteLine("async Task<bool> Add(Katalog item)-----------"+i.ToString()+"_db.Entry.State--"+_db.Entry(item).State.ToString());
@@ -53,7 +53,7 @@ namespace WebShopAPI.Model
              //  throw new Exception("NOt Implimetn Exception");
            //   Console.WriteLine("async Task<bool> Update(Katalog item)------_db.Kagalog.Any-----"+item.Id.ToString()+" "+item.Name);
              FlagValid  flag=new FlagValid{Flag=false,Message=null,Item=null};
-             Katalog selectItem= await _db.Katalog.FirstOrDefaultAsync(x=>x.Id==item.Id);
+             Katalog selectItem= await _db.Katalogs.FirstOrDefaultAsync(x=>x.Id==item.Id);
             
              
                if (selectItem==null)
@@ -66,7 +66,7 @@ namespace WebShopAPI.Model
        
            selectItem.Name=item.Name.Trim();
                 
-           _db.Katalog.Update(selectItem);
+           _db.Katalogs.Update(selectItem);
         
          int i=   await _db.SaveChangesAsync();
            if(i!=0){
@@ -87,14 +87,14 @@ namespace WebShopAPI.Model
           public async Task< FlagValid> Delete(int id){
              FlagValid flagValid=new FlagValid{Flag=false,Message=""};
               
-                Katalog item = _db.Katalog.FirstOrDefault(x => x.Id == id);
+                Katalog item = _db.Katalogs.FirstOrDefault(x => x.Id == id);
             if (item == null)
             {
               flagValid.Message="Каталога с таким id не существует!";
               flagValid.Flag=false;
                 return flagValid;
             }
-            _db.Katalog.Remove(item);
+            _db.Katalogs.Remove(item);
            int i= await _db.SaveChangesAsync();
            if(i!=0) {
              flagValid.Flag=true;

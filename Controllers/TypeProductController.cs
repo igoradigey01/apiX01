@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using WebShopAPI.Model;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
-using ShopDbLibNew;
+using ShopDb;
 
 namespace WebShopAPI.Controllers
 {

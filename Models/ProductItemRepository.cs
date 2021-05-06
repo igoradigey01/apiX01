@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
-using ShopDbLibNew;
+using ShopDb;
 
 namespace WebShopAPI.Model
 {
@@ -18,38 +18,46 @@ namespace WebShopAPI.Model
             _db = db;
         }
 
-        public async Task<string[]> GetImags(int idProduct)
+        public async Task<IEnumerable<Image>> GetImags(int idProduct)
         {
             //  throw new Exception("NOt Implimetn Exception");
-            var imgPaths = _db.Image.Where(p => p.Id == idProduct).Select(i => i.Name);
-            foreach (string i in imgPaths ){
+            var img = _db.Images.Where(p => p.ProductId == idProduct);
+           
 
-                Console.WriteLine(i);
-            }
-
-            return await imgPaths.ToArrayAsync();
+            return await img.ToArrayAsync();
 
         }
 
         public async Task<IEnumerable<Nomenclature>> GetNomenclatures(int idProduct)
         {
-            var nomenclatures = _db.ProductNomenclature.Where(p => p.ProductId == idProduct).Select(n => n.Nomenclature);
+            var nomenclatures = _db.ProductNomenclatures.Where(p => p.ProductId == idProduct).Select(n => n.Nomenclature);
             return await nomenclatures.ToArrayAsync();
 
         }
 
        
 
-        public async Task<FlagValid> AddImage(Image image)
+        public async Task<FlagValid> AddImage(Image item)
         {
-            throw new Exception("not implimetn exeption 14.11.20");
-            // return await _db.TypeProduct.ToListAsync();
+            await _db.Images.AddAsync(item);
+            int i = await _db.SaveChangesAsync();
+
+            //  Console.WriteLine("async Task<bool> Add(Katalog item)-----------"+i.ToString()+"_db.Entry.State--"+_db.Entry(item).State.ToString());
+            FlagValid  flag=new FlagValid{Flag=false,Message=null,Item=null};
+           if(i!=0){
+              flag.Message="БД add ok!";
+              flag.Flag=true;
+              flag.Item=null;
+               return flag;
+           }
+          else {
+              flag.Message="БД add not(false)!";
+              flag.Flag=false;
+              flag.Item=null;
+               return flag;
+           }
         }
-        public async Task<FlagValid> UpdateImage(Image image)
-        {
-            throw new Exception("not implimetn exeption 14.11.20");
-            // return await _db.TypeProduct.ToListAsync();
-        }
+        
         public async Task<FlagValid> DeleteImage(int id)
         {
             throw new Exception("not implimetn exeption 14.11.20");

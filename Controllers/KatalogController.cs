@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using ShopDbLibNew;
+using ShopDb;
 using WebShopAPI.Model; 
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;

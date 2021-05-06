@@ -4,8 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 //----------------------------------------------
-using Microsoft.EntityFrameworkCore;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+
+
 using System;
 using System.Text;
 using WebShopAPI.Model;
@@ -13,8 +13,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Options;
 using AuthLib;
-using ShopDbLibNew;
+using ShopDb;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.EntityFrameworkCore;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 
 
@@ -41,7 +43,7 @@ namespace WebShopAPI
             services.AddTransient<AuthRepository>();
             services.AddTransient<KatalogRepository>();
             services.AddTransient<ProductRepository>();
-            services.AddTransient<UploadImageRepository>();
+            services.AddTransient<ImageRepository>();
             services.AddTransient<TypeProductRepository>();
             services.AddTransient<ProductItemRepository>();
 
@@ -54,19 +56,40 @@ namespace WebShopAPI
 
            );
         
-        var authConfig=Configuration.GetSection("Auth");
-      var connectString=Configuration["ConnectStringLocal"];
+     
            //  var connectString=Configuration["ConnectStringDocker"];
       
-        
-             services.AddDbContext<MyShopContext>(options=>options.UseMySql(connectString,mysqlOptions =>
+        //-----------------------------new db context begin
+        /*
+             services.AddDbContext<MyShopContext>(options=>options.UseMySql(connectString
+             ,mysqlOptions =>
         {
             mysqlOptions
                 .ServerVersion(new Version(8, 0, 0), ServerType.MySql);
-        }));
-           
-            
+        }
+          
+        ));
+           */
+        //---------
+        // Replace with your server version and type.
+            // Use 'MariaDbServerVersion' for MariaDB.
+            // Alternatively, use 'ServerVersion.AutoDetect(connectionString)'.
+            // For common usages, see pull request #1233.
+               var authConfig=Configuration.GetSection("Auth");
+             var connectString=Configuration["ConnectStringLocal"];
+            var serverVersion = new MySqlServerVersion(new Version(8, 0,21));
 
+            // Replace 'YourDbContext' with the name of your own DbContext derived class.
+            services.AddDbContext<MyShopContext>(
+                options => options
+                    .UseMySql(connectString,  new MySqlServerVersion(new Version(8, 0, 11)))
+                //   .EnableSensitiveDataLogging() // These two calls are optional but help
+                 //   .EnableDetailedErrors() 
+                         // with debugging (remove for production).
+            );
+           
+           
+    //-----------------------------new db context end
             services.Configure<AuthLib.AuthOptions>(authConfig);
 
                var sp = services.BuildServiceProvider();
