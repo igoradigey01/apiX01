@@ -51,7 +51,8 @@ namespace WebShopAPI
 
              services.AddCors(
                opshions=>opshions.AddDefaultPolicy(builder=>{
-               builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+             builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+            // builder.WithOrigins("http://localhost:4200"); //09.05.21
            })
 
            );

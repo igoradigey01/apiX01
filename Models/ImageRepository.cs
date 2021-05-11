@@ -4,24 +4,65 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using ImageMagick;
+using System.Threading.Tasks;
+
 
 namespace WebShopAPI.Model
 {
-    public interface IUploadFile
-    {
-        public void Save(string imgPath, byte[] photo);
-        public void Update(string imgPath, byte[] photo);
-        public void Delete(string imgPath);
-
-    }
-
     //------------------------------------
 
-    public class ImageRepository : IUploadFile
+
+    public class ImageRepository
     {
 
         private readonly string _imgDir;
         private readonly IWebHostEnvironment _hostingEnvironment;
+        // dir host img wwwroot/images
+        private string GetImgPaht
+        {
+            get
+            {
+                string wwwroot = _hostingEnvironment.WebRootPath;
+                return System.IO.Path.Combine(wwwroot, _imgDir);
+            }
+        }
+        // generete random guid name-------
+        public string GetImgRamdomName(string imgName)
+        {
+
+            var extenion = System.IO.Path.GetExtension(imgName);
+            var name = Guid.NewGuid().ToString();
+            //  Console.WriteLine("Guid file name --" + name);
+
+            string fileName = System.IO.Path.Combine(name + extenion);
+            //Console.WriteLine("filePath --" + filePath);
+            return fileName;
+        }
+
+        public byte[] GetImage(string name)
+        {
+            var path = System.IO.Path.Combine(GetImgPaht, name);
+
+            FileInfo fileInf = new FileInfo(path);
+            if (fileInf.Exists)
+            {
+                try
+                {
+                    return File.ReadAllBytes(path);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("-----UploadImageRepository--Ошибка---GetImage()----");
+                    Console.WriteLine(ex.Message);
+                }
+            }
+
+            string not_found = "not_found.png";
+            var path_not_found = Path.Combine(GetImgPaht, not_found);
+            return File.ReadAllBytes(path_not_found);
+
+        }
+
 
         public ImageRepository(IConfiguration config, IWebHostEnvironment environment)
         {
@@ -30,8 +71,11 @@ namespace WebShopAPI.Model
 
         }
 
-        public void Save(string imgPath, byte[] photo)
+        public void Save(string imgName, byte[] photo)
         {
+
+            var imgPath = System.IO.Path.Combine(GetImgPaht, imgName);
+
             /// релализовать обработку err при записи файла using(){}??
             // throw new Exception("NOt Implimetn Exception");
             try
@@ -45,56 +89,85 @@ namespace WebShopAPI.Model
                 Console.WriteLine(ex.Message);
             }
         }
-        // for --test---------------
-        public void SaveBase64Img(string imgPath, string imgBase64String)
-        {
-            using (StreamWriter sw = File.CreateText(imgPath))
-            {
-                sw.Write(imgBase64String);
-                sw.Flush();
-            }
+        //---------------------------------------Convertor Base64 to Blob img
 
-        }
-        public void Update(string imgPath, byte[] photo)
+
+        public void Update(string imgName, byte[] photo)
         {
+            var imgPath = System.IO.Path.Combine(GetImgPaht, imgName);
+            FileInfo fileInf = new FileInfo(imgPath);
+            if (fileInf.Exists)
+            {
+                try
+                {
+                    WriteOldFile(imgPath, photo);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"--UploadImageRepository-----Ошибка Обновления {imgPath}");
+                    Console.WriteLine(ex.Message);
+                }
+            }
+            else
+            {
+                try
+                {
+                    //  SaveImgFile(imgPath, photo);
+                    WriteNewFile(imgPath, photo); //30.12.21 not resize file writer
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"-----UploadImageRepository--Ошибка---(Add)--img Save--{imgPath}--");
+                    Console.WriteLine(ex.Message);
+                }
+            }
+        }
+
+        //--------------------------
+
+        public void Delete(string imgName)
+        {
+            var imgPath = System.IO.Path.Combine(GetImgPaht, imgName);
+            FileInfo fileInf = new FileInfo(imgPath);
+
             try
             {
-               WriteOldFile(imgPath,photo);
+                if (fileInf.Exists)
+                {
+                    File.Delete(imgPath);
+                }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"--UploadImageRepository-----Ошибка Обновления {imgPath}");
-                Console.WriteLine(ex.Message);
-            }
-        }
-        public void Delete(string imgPath)
-        {   try
-            {
-            if (File.Exists(imgPath)){
-              File.Delete(imgPath);
-            }
-             }
             catch (Exception ex)
             {
                 Console.WriteLine($"---UploadImageRepository----Ошибка Delete file {imgPath}");
                 Console.WriteLine(ex.Message);
             }
         }
-
-        public string GetImgPathNewName(string imgName)
+        //-----------------------------
+        public byte[] Base64ImgConvertor(string PngBase64Img)
         {
-            string rootwww = _hostingEnvironment.WebRootPath;
-            var extenion = System.IO.Path.GetExtension(imgName);
-            var name = Guid.NewGuid().ToString();
-            Console.WriteLine("Guid file name --" + name);
+            string convert = PngBase64Img.Replace("data:image/png;base64,", String.Empty);
+            byte[] imgBytes = null;
+            try
+            {
+                imgBytes = Convert.FromBase64String(convert);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("-----UploadImageRepository--Ошибка--Base64ImgConvertor--");
+                Console.WriteLine(ex.Message);
+            }
 
-            string filePath = System.IO.Path.Combine(rootwww, _imgDir, name + extenion);
-            Console.WriteLine("filePath --" + filePath);
-            return filePath;
+            return imgBytes;
+
         }
+
+
+
         // old vershion not resaze file img- 28.03.21
         private async void WriteOldFile(string pathPhoto, byte[] img)
         {
+            Console.WriteLine($"img-Repositori-WriteOldFile --{pathPhoto} ");
             // сохраняем файл в папку Files в каталоге wwwroot
             using (var fileStream = new FileStream(pathPhoto, FileMode.Truncate))
             {
@@ -105,19 +178,21 @@ namespace WebShopAPI.Model
         }
         // old vershion not resaze file img -28.03.21
         private void WriteNewFile(string pathPhoto, byte[] img)
-        {              // сохраняем файл в папку Files в каталоге wwwroot
+        {
+            Console.WriteLine($"img-Repositori writenewFile --{pathPhoto} ");
+            // сохраняем файл в папку Files в каталоге wwwroot
             using (FileStream f = File.Create(pathPhoto))
             {
 
-                f.WriteAsync(img);
-                f.FlushAsync();
+                f.Write(img);
+                f.Flush();
             }
 
 
         }
 
-        // new vershion -resaze file img -28.03.21 Resaze file
-        private void SaveImgFile(string pathPhoto, IFormFile filePhoto)
+        //   new vershion -resaze file img -28.03.21 Resaze file lib-- MagickImage
+        private void SaveAndResazeImgFile(string pathPhoto, IFormFile filePhoto)
         {
 
             const int width = 600;
@@ -134,6 +209,17 @@ namespace WebShopAPI.Model
 
             }
         }
+        //---------------------------------
+        // for --test---------------
+        private void SaveBase64Img(string imgPath, string imgBase64String)
+        {
+            using (StreamWriter sw = File.CreateText(imgPath))
+            {
+                sw.Write(imgBase64String);
+                sw.Flush();
+            }
+        }
+        //-------------------------------------
 
     }
 }

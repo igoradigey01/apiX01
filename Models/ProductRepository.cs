@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace WebShopAPI.Model
 {
+    // смотри---ClassData.cs-- :ICRUD named- Iterfaise
     public class ProductRepository
     {
         private readonly MyShopContext _db;
@@ -17,13 +18,7 @@ namespace WebShopAPI.Model
             _db = db;
         }
 
-        public async Task<IEnumerable<ShopDb.Product>> Get()
-        {
-
-            //  throw new Exception("not implimetn exeption 14.11.20");
-            return await _db.Products.ToListAsync();
-
-        }
+       
 
         public async Task<IEnumerable<Product>> Get(int katalogId)
         {
@@ -32,19 +27,17 @@ namespace WebShopAPI.Model
 
         }
 
-        public bool NameUnique(string name)
-        {
-            var selectItem = _db.Products.FirstOrDefault(x => x.Name == name);
-            // Console.WriteLine((selectItem == null ).ToString()+"selectItem ==null");            
-
-            if (selectItem != null) return false;
-            return true;
-
-
+        public async Task<Product> Item(int idProduct){
+            return await _db.Products.Where(p=>p.Id==idProduct).FirstOrDefaultAsync();
         }
 
+        public async Task<Product>ItemLoadChild(Product item){
+            _db.Attach<Product>(item);
+         await   _db.Entry<Product>(item).Collection<Image>(p=>p.Images).LoadAsync();
+            return item ;
+        }
 
-        public async Task<bool> Add(Product item)
+              public async Task<bool> Create(Product item)
         {
 
             // db.Users.Add(user);
@@ -74,9 +67,6 @@ namespace WebShopAPI.Model
 
         }
         //Обновляет значения в бд но не img (photo)
-
-
-
         public async Task<FlagValid> Update(Product item)
         {
 
@@ -131,21 +121,62 @@ namespace WebShopAPI.Model
 
         }
 
-        public async Task<bool> Delete(int id)
+        public async Task<FlagValid> Delete(Product item)
         {
+            
+               FlagValid  flag=new FlagValid{Flag=false,Message=null,Item=null};
+               int i=0;
 
 
-            Product item = _db.Products.FirstOrDefault(x => x.Id == id);
-            if (item == null)
+
+          //  Product item = _db.Products.FirstOrDefault(x => x.Id == id);
+            try{
+           // Image item= await    _db.Images.Where(p=>p.Id==id).FirstOrDefaultAsync();
+           _db.Attach<Product>(item);
+           _db.Products.Remove(item);
+              i=await  _db.SaveChangesAsync();
+               }
+              catch (Exception ex)
             {
-                return false;
+                Console.WriteLine("--- ProductRepository----Ошибка БД Images delete not(false)!");
+                Console.WriteLine(ex.Message);
+                 flag.Message="БД Products delete not(false)!";
+                  flag.Flag=false;
             }
-            _db.Products.Remove(item);
-            int i = await _db.SaveChangesAsync();
-            if (i != 0) return true;
-            else return false;
+            if(i!=0){
+              flag.Message="БД Products delete ok!";
+              flag.Flag=true;
+              flag.Item=null;
+               return flag;
+           }
+          else {
+              flag.Message="БД Products delete not(false)!";
+              flag.Flag=false;
+              flag.Item=null;
+               return flag;
+           }
 
         }
+
+        public async Task<FlagValid> DeleteChildImage(Image item){
+             throw new Exception("NOt Implimetn Exception");
+
+        }
+          public bool NameUnique(string name)
+        {
+            var selectItem = _db.Products.FirstOrDefault(x => x.Name == name);
+            // Console.WriteLine((selectItem == null ).ToString()+"selectItem ==null");            
+
+            if (selectItem != null) return false;
+            return true;
+
+
+        }
+
+        
+
+
+
 
     }
 }

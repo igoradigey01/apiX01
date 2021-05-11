@@ -8,12 +8,14 @@ using ShopDb;
 
 namespace WebShopAPI.Model
 {
+    // смотри---ClassData.cs-- :ICRUD named- Iterfaise
     public class TypeProductRepository
     {
         private readonly MyShopContext _db;
 
 
-        public TypeProductRepository(
+        public TypeProductRepository
+        (
             MyShopContext db
             )
         {
@@ -27,7 +29,12 @@ namespace WebShopAPI.Model
             return await _db.TypeProducts.ToListAsync();
         }
 
-        public async Task<FlagValid> Add(TypeProduct typeProduct)
+        public async Task<TypeProduct>Item(int id){
+
+               throw new Exception("not implimetn exeption 14.11.20");
+        }
+
+        public async Task<FlagValid> Create(TypeProduct typeProduct)
         {
             throw new Exception("not implimetn exeption 14.11.20");
             // return await _db.TypeProduct.ToListAsync();

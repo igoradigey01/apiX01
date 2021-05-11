@@ -7,7 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using ShopDb;
 
 namespace WebShopAPI.Model
-{
+{     
+    // смотри---ClassData.cs-- :ICRUD named- Iterfaise
     public class ProductItemRepository
     {
 
@@ -28,16 +29,18 @@ namespace WebShopAPI.Model
 
         }
 
-        public async Task<IEnumerable<Nomenclature>> GetNomenclatures(int idProduct)
-        {
-            var nomenclatures = _db.ProductNomenclatures.Where(p => p.ProductId == idProduct).Select(n => n.Nomenclature);
-            return await nomenclatures.ToArrayAsync();
+        public async Task<Image> GetItemImage(int idItem){
+              
+             
 
+            return await _db.Images.Where(p=>p.Id==idItem).FirstOrDefaultAsync();
         }
-
-       
-
-        public async Task<FlagValid> AddImage(Image item)
+               //-------------------------------------
+        public async Task<FlagValid> UpdateImage(Image item){
+           
+           throw new Exception("not implimetn exeption 14.11.20");
+        }       
+        public async Task<FlagValid> CreateImage(Image item)
         {
             await _db.Images.AddAsync(item);
             int i = await _db.SaveChangesAsync();
@@ -45,35 +48,72 @@ namespace WebShopAPI.Model
             //  Console.WriteLine("async Task<bool> Add(Katalog item)-----------"+i.ToString()+"_db.Entry.State--"+_db.Entry(item).State.ToString());
             FlagValid  flag=new FlagValid{Flag=false,Message=null,Item=null};
            if(i!=0){
-              flag.Message="БД add ok!";
+              flag.Message="БД Images add ok!";
               flag.Flag=true;
               flag.Item=null;
                return flag;
            }
           else {
-              flag.Message="БД add not(false)!";
+              flag.Message="БД Images add not(false)!";
               flag.Flag=false;
               flag.Item=null;
                return flag;
            }
         }
         
-        public async Task<FlagValid> DeleteImage(int id)
+        public async Task<FlagValid> DeleteImage(Image item)
         {
-            throw new Exception("not implimetn exeption 14.11.20");
+               FlagValid  flag=new FlagValid{Flag=false,Message=null,Item=null};
+               int i=0;
+
+               try{
+           // Image item= await    _db.Images.Where(p=>p.Id==id).FirstOrDefaultAsync();
+           _db.Attach<Image>(item);
+           _db.Images.Remove(item);
+              i=await  _db.SaveChangesAsync();
+               }
+              catch (Exception ex)
+            {
+                Console.WriteLine("---UploadImageRepository----Ошибка БД Images delete not(false)!");
+                Console.WriteLine(ex.Message);
+                 flag.Message="БД Images delete not(false)!";
+                  flag.Flag=false;
+            }
+            if(i!=0){
+              flag.Message="БД Images delete ok!";
+              flag.Flag=true;
+              flag.Item=null;
+               return flag;
+           }
+          else {
+              flag.Message="БД Images delete not(false)!";
+              flag.Flag=false;
+              flag.Item=null;
+               return flag;
+           }
+
+          //  throw new Exception("not implimetn exeption 14.11.20");
             // return await _db.TypeProduct.ToListAsync();
         }
 
         //---------------Nomenclature ----------------------
        
+                public async Task<IEnumerable<Nomenclature>> GetItemNomenclatures(int idProduct)
+        {
+            var nomenclatures = _db.ProductNomenclatures.Where(p => p.ProductId == idProduct).Select(n => n.Nomenclature);
+            return await nomenclatures.ToArrayAsync();
 
-        public async Task<bool> AddNomenclature(int idNomenclature)
+        }
+
+       
+        public async Task<bool> AddItemNomenclature(int idNomenclature)
         {
             throw new Exception("not implimetn exeption 14.11.20");
             // return await _db.TypeProduct.ToListAsync();
         }
+        
          // Update  не нужно либо удалить либо добавить
-        public async Task<bool> DeleteNomenclature(int id)
+        public async Task<bool> DeleteItemNomenclature(int id)
         {
             throw new Exception("not implimetn exeption 14.11.20");
             // return await _db.TypeProduct.ToListAsync();
