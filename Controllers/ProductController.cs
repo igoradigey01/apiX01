@@ -109,15 +109,15 @@ namespace WebShopAPI.Controllers
 
 
             // Console.WriteLine("Task< ActionResult<Model>> Post(Model item)----"+item.Name +"-"+item.Id+"-"+item.KatalogId);
+            var flag=await _repository.Create(item);
 
-
-            if (await _repository.Create(item))
+            if (flag.Flag)
             {
                 return Ok(item);
             }
             else
             {
-                return BadRequest("Ошибка субд,запись в бд не создана!");
+                return BadRequest(flag.Message);
             }
 
 

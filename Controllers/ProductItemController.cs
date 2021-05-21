@@ -42,6 +42,11 @@ namespace WebShopAPI.Controllers
             return await _repository.GetImags(id);
 
         }
+        
+        [HttpGet("{id}")]
+        public async Task<Product> GetItemProducts(int id){
+             return await _repository.GetItemProducts(id);
+        }
 
         // api/item-product (post) создать
         [HttpPost]

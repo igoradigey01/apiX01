@@ -16,7 +16,7 @@ namespace WebShopAPI.Controllers
     [Route("api/[controller]")]
     public class ImageController : ControllerBase
     {
-         //-----------------------------
+        //-----------------------------
         string[] _l = new[] { "один", "два", "Три-test" };
 
         readonly ImageRepository _imageRepository;
@@ -31,6 +31,7 @@ namespace WebShopAPI.Controllers
 
 
         [HttpGet("{name}")]
+
         public async Task<IActionResult> Get(string name)
         {
             var contentType = "image/png";

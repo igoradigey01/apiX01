@@ -35,6 +35,10 @@ namespace WebShopAPI.Model
 
             return await _db.Images.Where(p=>p.Id==idItem).FirstOrDefaultAsync();
         }
+
+        public async Task<Product> GetItemProducts(int id){
+            return await _db.Products.Where(p=>p.Id==id).FirstOrDefaultAsync();
+        }
                //-------------------------------------
         public async Task<FlagValid> UpdateImage(Image item){
            

@@ -37,17 +37,22 @@ namespace WebShopAPI.Model
             return item ;
         }
 
-              public async Task<bool> Create(Product item)
+              public async Task<FlagValid> Create(Product item)
         {
-
+                    var flag=new FlagValid{Flag=false,Item=null,Message=""};
             // db.Users.Add(user);
             if (item.KatalogId == -1)
             {
-                return false;
+                flag.Message="Ошибка БД  KatalogId==-1";
+                flag.Flag=false;
+
+                return flag;
             }
             if (item.TypeProductId == -1)
             {
-                return false;
+                 flag.Message="Ошибка БД TypeProductId==-1";
+                flag.Flag=false;
+                return flag;
             }
             // Проверить на уникольность ???
 
@@ -61,18 +66,24 @@ namespace WebShopAPI.Model
                 ///  Console.WriteLine("async Task<bool> Add(Katalog item)--- _del.Invoke-- bigin"+"_dev==null"+(_del==null).ToString());
                 // _del(selectItem.Image,photo); делегат не работаете  error null async metod
                 //   Console.WriteLine("async Task<bool> Add(Katalog item)--- _del.Invoke-- end");
-                return true;
+                flag.Message="";
+                flag.Flag=true;
+                return flag;
             }
-            else return false;
+            flag.Message="Ошибка субд Create,запись в бд не создана!";
+            flag.Flag=false;
+             return flag;
 
         }
         //Обновляет значения в бд но не img (photo)
         public async Task<FlagValid> Update(Product item)
         {
+            bool flag_edit=false;
 
             Product selectItem = await _db.Products.FirstOrDefaultAsync(x => x.Id == item.Id);
 
             //   var flagValid=new FlagValid {Flag=false,ErrorMessage=""};
+             var flag=new FlagValid{Flag=false,Item=null,Message=""};
 
 
             if (selectItem == null)
@@ -80,29 +91,49 @@ namespace WebShopAPI.Model
                 return new FlagValid { Flag = false, Message = "Товар с таким id  в БД ненайден" };
             }
             // проверка на уникльность
-           
+             if (item.KatalogId == -1)
+            {
+                flag.Message="Ошибка БД  KatalogId==-1";
+                flag.Flag=false;
+
+                return flag;
+            }
+            if (item.TypeProductId == -1)
+            {
+                 flag.Message="Ошибка БД TypeProductId==-1";
+                flag.Flag=false;
+                return flag;
+            }
             
 
             if (selectItem.KatalogId != item.KatalogId)
             {
+                flag_edit=true;
                 selectItem.KatalogId = item.KatalogId;
             }
 
             if (selectItem.TypeProductId != item.TypeProductId)
             {
+                 flag_edit=true;
                 selectItem.TypeProductId = item.TypeProductId;
             }
 
-
-
+             if(selectItem.Name != item.Name.Trim()){
+                  flag_edit=true;
             selectItem.Name = item.Name.Trim();
+             }
+             if(selectItem.Description!=item.Description){
+                   flag_edit=true;
             selectItem.Description = item.Description;
+             }
             if (selectItem.Price != item.Price)
             {
+                 flag_edit=true;
                 selectItem.Price = item.Price;
             }
             if (selectItem.Markup != item.Markup)
             {
+                 flag_edit=true;
                 selectItem.Markup = item.Markup;
             }
             selectItem.Image = item.Image;
@@ -114,10 +145,22 @@ namespace WebShopAPI.Model
             int i = await _db.SaveChangesAsync();
             if (i != 0)
             {
+                 flag.Message="";
+                 flag.Flag=true;
                 //    _del.Invoke(selectItem.Image,photo);
-                return new FlagValid{Flag=true,Message=""};
+                return flag;
             }
-            return new FlagValid{Flag=false,Message="Ошибка SaveChangesAsync() БД поле Prodcut not Update"};
+            if(!flag_edit)
+            {
+                  flag.Message="";
+                 flag.Flag=true;
+                //    _del.Invoke(selectItem.Image,photo);
+                return flag;
+
+            }
+            flag.Flag=false;
+            flag.Message="Ошибка субд Update,запись в бд не создана!";
+            return flag;
 
         }
 

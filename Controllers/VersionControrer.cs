@@ -18,7 +18,7 @@ namespace WebShopAPI.Controllers
         //-----------------------------
         string[] _l=new[]{"один","два","Три-test"};
 
-        string _vertion=" v0.4.2-beta-(8.05.21)--debug vertion-- aspnetcore -net5.0";
+        string _vertion=" v0.4.5-beta-(21.05.21)--debug  vertion-- aspnetcore -net5.0";
         string _description="";
 
 
