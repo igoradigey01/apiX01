@@ -2,14 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using WebShopAPI.Model;
+using ShopAPI.Model;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 using ShopDb;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 
-namespace WebShopAPI.Controllers
+namespace ShopAPI.Controllers
 {
     //товарная позиция
     [ApiController]
@@ -31,15 +31,15 @@ namespace WebShopAPI.Controllers
 
         // воозвращает path-фото колекция (детарльное фото[] Товара)
         //---  [Route("api/[controller]/[action]")]--
-        [HttpGet("{id}")]
-        public async Task<IEnumerable<Image>> GetImages(int id)
+        [HttpGet("{idProduct}")]
+        public async Task<IEnumerable<Image>> GetImages(int idProcuct)
         {
             // return "test-Get_TypeProductController";
             //  test_MySql();
             // throw new Exception("NOt Implimetn Exception");
             //  return await _repository.Get();
-            Console.WriteLine("test GetImages ProductItemController" + " --IdProduct--" + id.ToString());
-            return await _repository.GetImags(id);
+            Console.WriteLine("test GetImages ProductItemController" + " --IdProduct--" + idProcuct.ToString());
+            return await _repository.GetImags(idProcuct);
 
         }
         
@@ -50,7 +50,7 @@ namespace WebShopAPI.Controllers
 
         // api/item-product (post) создать
         [HttpPost]
-        public async Task<ActionResult<bool>> CreateImage()
+        public async Task<ActionResult<Image>> CreateImage()
         {
 
             Image item = new Image { Id = 0, Name = "", ProductId = -1 };
@@ -108,7 +108,7 @@ namespace WebShopAPI.Controllers
             var flag = await _repository.CreateImage(item);
             if (flag.Flag)
             {
-                return Ok(flag.Flag);
+                return Ok(flag.Item);
             }
             else
             {
@@ -120,9 +120,10 @@ namespace WebShopAPI.Controllers
         }
        
          //    [HttpPut] -- не ипользуется толко добавляем или удаляем на клиенте
-        public async Task<ActionResult<bool>> UpdateImage(int idProcuct)
+        public async Task<ActionResult<Image>> UpdateImage(int idImage)
         {
-           //  throw new Exception("NOt Implimetn Exception");
+           throw new Exception("NOt Implimetn Exception");
+
             IFormCollection form = await Request.ReadFormAsync();
             if (form == null)
             {
@@ -163,10 +164,16 @@ namespace WebShopAPI.Controllers
         {
            // throw new Exception("NOt Implimetn Exception");
            Image item = await _repository.GetItemImage(id);
+            if (item== null)
+        {
+            return BadRequest("Image not found in БД");
+        }
+            Console.WriteLine($"delete img-- name--{item.Name}--id--{item.Id}--OK()-- ");
             var flagValid =await  _repository.DeleteImage(item);
             _imageRepository.Delete(item.Name);
             if (!flagValid.Flag)
             {
+               
                 return BadRequest(flagValid.Message);
             }
             return Ok();

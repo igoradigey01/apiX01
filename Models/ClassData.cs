@@ -3,7 +3,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 
-namespace WebShopAPI.Model
+namespace ShopAPI.Model
 {
     // class передачи сообщений Validation между repository adn controllers
     public class FlagValid

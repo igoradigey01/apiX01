@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 using ShopDb;
 
-namespace WebShopAPI.Model
+namespace ShopAPI.Model
 {
     // смотри---ClassData.cs-- :ICRUD named- Iterfaise
     public class TypeProductRepository

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using WebShopAPI.Model;
+using ShopAPI.Model;
 //-----------------
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
@@ -11,9 +11,9 @@ using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authorization;
 using ShopDb;
+using System.Text;
 
-
-namespace WebShopAPI.Controllers
+namespace ShopAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -26,17 +26,17 @@ namespace WebShopAPI.Controllers
        
 
             string[] _l=new[]{"один","два","Три-test"};
-       private readonly AuthLib.AuthOptions _authOptions;
+     //  private readonly AuthLib.AuthOptions _authOptions;
         private readonly AuthRepository _repository;
         
 
         private readonly ILogger<AuthController> _logger;
  //////////////////----------Конструктор----------------------------------------------------------------
          public AuthController(ILogger<AuthController> logger,
-             IOptions<AuthLib.AuthOptions> options,AuthRepository repository) // конструктор
+             AuthRepository repository) // конструктор
         {
             _logger = logger;
-            _authOptions=options.Value;
+            //_authOptions=options.Value;
              _repository=repository;
         }
 
@@ -74,7 +74,7 @@ namespace WebShopAPI.Controllers
           Console.WriteLine("---------------------------");
             Console.WriteLine(user.Name);
             
-            User newUser=new  User {Role=Role.User};
+            User newUser=new  User ();  //{Role=Role.User};16.09.21
             //-----------------
             if(user.Password ==null){
                 ModelState.AddModelError("Password","Незадан Пароль");
@@ -267,30 +267,28 @@ namespace WebShopAPI.Controllers
 //////////////////////------------------Создаем Токен-----------------------------------
     private string GenerateToken(ClaimsIdentity userIdentity)
 {
-	var mySecret = _authOptions.Secret; // ключ для шифрации
-	var mySecurityKey =_authOptions.GetSymmerySecuritiKey();
-	var myIssuer = _authOptions.Issuer;  // издатель токена
-	var myAudience = _authOptions.Audience;// потребитель токена
-    int LIFETIME = _authOptions.TokenLifeTime ; // время жизни токена 
+	//var mySecret = Environment.GetEnvironmentVariable("ClientSecrets"); // ключ для шифрации
+	var mySecurityKey =new SymmetricSecurityKey(
+        Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("ClientSecrets"))
+        );
+	
+    int LIFETIME =60; // время жизни токена 
 
 	var tokenHandler = new JwtSecurityTokenHandler();
     var time = DateTime.UtcNow;
 	var tokenDescriptor = new SecurityTokenDescriptor
 	{
-
-         // 2. Создаем утверждения для токена.
-        
-        
-		Subject = userIdentity,
+		Subject = userIdentity, //Claims
         
 		Expires = time.Add(TimeSpan.FromMinutes(LIFETIME)),
-		Issuer = myIssuer,
-		Audience = myAudience,
+		Issuer = Environment.GetEnvironmentVariable("Issuer"),// издатель токена
+		Audience =  Environment.GetEnvironmentVariable("Audience"),// потребитель токена
 		SigningCredentials = new SigningCredentials(mySecurityKey, SecurityAlgorithms.HmacSha256Signature)
 	};
 
-	var token = tokenHandler.CreateToken(tokenDescriptor);
-	return tokenHandler.WriteToken(token);
+	    var token = tokenHandler.CreateToken(tokenDescriptor);
+
+    	return tokenHandler.WriteToken(token);
 }
 /////////////------------Проверяем User и Создаем утверждения для токена.----------------------------------------
  private ClaimsIdentity GetUserIdentity(string email, string password)
@@ -301,7 +299,7 @@ namespace WebShopAPI.Controllers
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimsIdentity.DefaultNameClaimType, user.Id.ToString()),
-                    new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role.ToString())
+                  //  new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role.ToString()) 16.09.21
                 };
                 ClaimsIdentity claimsIdentity =
                 new ClaimsIdentity(claims, "access_token", ClaimsIdentity.DefaultNameClaimType,
@@ -319,7 +317,7 @@ namespace WebShopAPI.Controllers
 
 //////////////////-----------------------------------------------------
 
-public bool ValidateCurrentToken(string token)
+/* public bool ValidateCurrentToken(string token)
 {
 	var mySecret = _authOptions.Secret;
 	var mySecurityKey =_authOptions.GetSymmerySecuritiKey();
@@ -345,7 +343,7 @@ public bool ValidateCurrentToken(string token)
 		return false;
 	}
 	return true;
-}
+} */
 
 
        

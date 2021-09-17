@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using ShopDb;
 
 
-namespace WebShopAPI.Model
+namespace ShopAPI.Model
 {
     // Аунтефикация Auth------------------------  
 

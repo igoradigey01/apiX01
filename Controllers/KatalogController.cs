@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using ShopDb;
-using WebShopAPI.Model; 
+using ShopAPI.Model; 
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
-namespace WebShopAPI.Controllers
+namespace ShopAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

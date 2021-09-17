@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using ShopDb;
 
-namespace WebShopAPI.Model
+namespace ShopAPI.Model
 {
 public class AuthRepository
 {
@@ -22,19 +22,21 @@ public class AuthRepository
     //выбрать все записи из таблицы 
     public IQueryable<User> GetUsers()
     {
-        return context.Users.OrderBy(x => x.Name);
+        throw new Exception("Exception --GetUser ---Not  implement  exception");
+       // return context.Users.OrderBy(x => x.Name);
     }
 
     //найти определенную запись по id
     public User GetUserId(int id)
     {
-        return context.Users.Single(x => x.Id == id);
+        throw new Exception("Exception --GetUserId(int id) ---Not  implement  exception");
+        //return context.Users.Single(x => x.Id == id);
     }
    
     // Есть ли user 
     public User ValidateUser(string email,string password){
         if((email!=null)&&(password!=null)){
-            return  context.Users.SingleOrDefault(u=> u.Password==password && u.Email==email);
+          //  return  context.Users.SingleOrDefault(u=> u.Password==password && u.Email==email);
         }
 
         return null;
@@ -46,10 +48,11 @@ public class AuthRepository
         if(email==null){
             return false;
         }
-      User user=  context.Users.SingleOrDefault(u=>u.Email==email);
-      if(user!=null){
-          return false;
-      }
+        throw new Exception("Exception --GetUserId(int id) ---Not  implement  exception");
+    //   User user=  context.Users.SingleOrDefault(u=>u.Email==email);
+    //   if(user!=null){
+    //       return false;
+    //   }
       return true;
     }
            
@@ -58,10 +61,11 @@ public class AuthRepository
      if(phone==null){
          return false;
      }
-      User user =context.Users.SingleOrDefault(u=>u.Phone==phone);
-      if(user!=null){
-          return false;
-      }
+     throw new Exception("Exception --GetUserId(int id) ---Not  implement  exception");
+    //   User user =context.Users.SingleOrDefault(u=>u.Phone==phone);
+    //   if(user!=null){
+    //       return false;
+    //   }
         return true;
     }
 
@@ -76,10 +80,9 @@ public class AuthRepository
     //сохранить новую запись в БД
     public void CreateUser(User user)
     {
-
-        
-        context.Users.Add(user);
-        context.SaveChanges();
+throw new Exception("Exception --GetUserId(int id) ---Not  implement  exception");
+        // context.Users.Add(user);
+        // context.SaveChanges();
        
           
         /*
@@ -99,8 +102,9 @@ public class AuthRepository
     //удалить существующую запись
     public void DeleteUser(User entity)
     {
-        context.Users.Remove(entity);
-        context.SaveChanges();
+        throw new Exception("Exception --GetUserId(int id) ---Not  implement  exception");
+        // context.Users.Remove(entity);
+        // context.SaveChanges();
     }
 }
 }

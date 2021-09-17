@@ -6,7 +6,7 @@ using  Microsoft.EntityFrameworkCore;
 
 using ShopDb;
 
-namespace WebShopAPI.Model
+namespace ShopAPI.Model
 {
     public class KatalogRepository
     {

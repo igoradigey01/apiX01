@@ -5,14 +5,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShopDb;
-using WebShopAPI.Model;
+using ShopAPI.Model;
 using Microsoft.AspNetCore.Authorization;
 using System.IO;
 
 
 
 
-namespace WebShopAPI.Controllers
+namespace ShopAPI.Controllers
 {
 
     [Route("api/[controller]")]

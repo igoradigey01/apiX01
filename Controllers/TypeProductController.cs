@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using WebShopAPI.Model;
+using ShopAPI.Model;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 using ShopDb;
 
-namespace WebShopAPI.Controllers
+namespace ShopAPI.Controllers
 {
 
     [ApiController]

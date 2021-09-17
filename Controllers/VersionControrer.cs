@@ -2,24 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using WebShopAPI.Model;
+using ShopAPI.Model;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
-namespace WebShopAPI.Controllers
+namespace ShopAPI.Controllers
 {    
-        
+       
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     public class VersionController : ControllerBase
     {
-        
-
- 
-        //-----------------------------
-        string[] _l=new[]{"один","два","Три-test"};
-
-        string _vertion=" v0.4.5-beta-(21.05.21)--debug  vertion-- aspnetcore -net5.0";
-        string _description="";
+       
+        string _vertion=" v0.4.8-beta-(15.09.21)--debug  vertion-- aspnetcore -net5.0";
+        string _description="Create Identity net core model";
 
 
         public VersionController(){
@@ -29,12 +24,21 @@ namespace WebShopAPI.Controllers
         
         
 
-         [HttpGet]        
-        public VetsionInfo Get()
+        [HttpGet]     
+        public VetsionInfo Info()
         {
             return  new VetsionInfo{V=_vertion,Description=_description}; // отправка в формате json  (-error parsing angular response)
-            //  throw new Exception("NOt Implimetn Exception");
+
         }
+
+        [HttpGet] 
+        [Authorize]       
+        public IActionResult Secret()
+        {
+            return  Ok("Secret"); // отправка в формате json  (-error parsing angular response)
+
+        }
+
 
        
             

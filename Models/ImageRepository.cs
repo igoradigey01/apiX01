@@ -7,7 +7,7 @@ using ImageMagick;
 using System.Threading.Tasks;
 
 
-namespace WebShopAPI.Model
+namespace ShopAPI.Model
 {
     //------------------------------------
 
