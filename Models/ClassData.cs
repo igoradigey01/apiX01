@@ -13,11 +13,7 @@ namespace ShopAPI.Model
         public object Item { get; set; }
     }
 
-    public class VetsionInfo
-    {
-        public string V { get; set; }
-        public string Description { get; set; }
-    }
+   
 
     // не реализован  -temp --Create, Read, Update & Delete 
     public interface ICRUD

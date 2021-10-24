@@ -29,7 +29,14 @@ namespace ShopAPI.Model
           return await _db.Katalogs.ToListAsync();
         }
 
-         public async Task<FlagValid> Add(Katalog item){             
+        public async Task<IEnumerable<Product>> Get(int katalogId)
+        {
+
+            return await _db.Products.Where(p => p.KatalogId == katalogId).ToListAsync();
+
+        }
+
+        public async Task<FlagValid> Add(Katalog item){             
                 FlagValid flag=new FlagValid{Flag=false,Message=null};
                // db.Users.Add(user);
              await _db.Katalogs.AddAsync(item);  

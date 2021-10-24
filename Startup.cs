@@ -17,6 +17,7 @@ using ShopDb;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using Microsoft.AspNetCore.Identity;
 
 
 
@@ -27,7 +28,7 @@ namespace ShopAPI
     public class Startup
     {
         public IConfiguration Configuration { get; }
-     
+
 
         public Startup(IConfiguration configuration)
         {
@@ -40,12 +41,13 @@ namespace ShopAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<AuthRepository>();
+            // services.AddTransient<AuthRepository>();
             services.AddTransient<KatalogRepository>();
             services.AddTransient<ProductRepository>();
             services.AddTransient<ImageRepository>();
             services.AddTransient<TypeProductRepository>();
             services.AddTransient<ProductItemRepository>();
+            services.AddTransient<ITokenService, TokenService>();
 
             services.AddControllers();
 
@@ -57,31 +59,27 @@ namespace ShopAPI
                   .AllowCredentials()
                   ));
 
-
-
-         //   var authConfig = Configuration.GetSection("Auth");
-            var connectString = Configuration["ConnectStringLocal"];
+            //   var authConfig = Configuration.GetSection("Auth");
+            var connectStringShop = Environment.GetEnvironmentVariable("ConnectString")+"database=ShopDB;";
+            var connectStringAppIdentity= Environment.GetEnvironmentVariable("ConnectString")+"database=AppIdentityDB;";
             //  var serverVersion = new MySqlServerVersion(new Version(8, 0,21));
 
             // Replace 'YourDbContext' with the name of your own DbContext derived class.
             services.AddDbContext<MyShopContext>(
                 options => options
-                    .UseMySql(connectString, new MySqlServerVersion(new Version(8, 0, 11)))
+                    .UseMySql(connectStringShop, new MySqlServerVersion(new Version(8, 0, 11)))
 
             );
 
+            services.AddDbContext<AppIdentityDbContext>(
+                options=>options.UseMySql( connectStringAppIdentity, new MySqlServerVersion(new Version(8, 0, 11))
+            ));
 
-            //-----------------------------new db context end
-          //  services.Configure<AuthLib.AuthOptions>(authConfig);
+             // затем подключаем сервисы Identity
+            services.AddIdentity<AppUser,IdentityRole> ()
+                    .AddEntityFrameworkStores<AppIdentityDbContext>()
+                   .AddDefaultTokenProviders();
 
-         //   var sp = services.BuildServiceProvider();
-
-            // Resolve the services from the service provider
-            // var fooService = sp.GetService<IFooService>();
-        //    var options = sp.GetService<IOptions<AuthLib.AuthOptions>>();
-
-          
-            // Console.WriteLine("Aut Startyp file"+_authOptions.Value.Secret);
 
             services.AddAuthentication(
                 opt =>
@@ -121,6 +119,8 @@ namespace ShopAPI
 
         }
 
+
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
@@ -129,7 +129,6 @@ namespace ShopAPI
             {
                 app.UseDeveloperExceptionPage();
             }
-
 
             app.UseRouting();
             //-------  Cors all servers------------
@@ -145,8 +144,6 @@ namespace ShopAPI
             app.UseAuthorization();
             //------------20.12.20-----------
             app.UseStaticFiles();
-
-
 
             app.UseEndpoints(endpoints =>
             {

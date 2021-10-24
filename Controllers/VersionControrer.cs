@@ -6,8 +6,13 @@ using ShopAPI.Model;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 namespace ShopAPI.Controllers
-{    
-       
+{
+    public class VetsionInfo
+    {
+        public string V { get; set; }
+        public string Description { get; set; }
+    }
+
     [ApiController]
     [Route("api/[controller]/[action]")]
     public class VersionController : ControllerBase

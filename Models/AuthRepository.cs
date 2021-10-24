@@ -20,21 +20,21 @@ public class AuthRepository
     }
 
     //выбрать все записи из таблицы 
-    public IQueryable<User> GetUsers()
+    public IQueryable<AppUser> GetUsers()
     {
         throw new Exception("Exception --GetUser ---Not  implement  exception");
        // return context.Users.OrderBy(x => x.Name);
     }
 
     //найти определенную запись по id
-    public User GetUserId(int id)
+    public AppUser GetUserId(int id)
     {
         throw new Exception("Exception --GetUserId(int id) ---Not  implement  exception");
         //return context.Users.Single(x => x.Id == id);
     }
    
     // Есть ли user 
-    public User ValidateUser(string email,string password){
+    public AppUser ValidateUser(string email,string password){
         if((email!=null)&&(password!=null)){
           //  return  context.Users.SingleOrDefault(u=> u.Password==password && u.Email==email);
         }
@@ -71,14 +71,14 @@ public class AuthRepository
 
    
     // обновить существующую запись в бд
-    public void SaveUser(User user){
+    public void SaveUser(AppUser user){
         context.Entry(user).State = EntityState.Modified;
         context.SaveChanges();
     }
 
 
     //сохранить новую запись в БД
-    public void CreateUser(User user)
+    public void CreateUser(AppUser user)
     {
 throw new Exception("Exception --GetUserId(int id) ---Not  implement  exception");
         // context.Users.Add(user);
@@ -100,7 +100,7 @@ throw new Exception("Exception --GetUserId(int id) ---Not  implement  exception"
     }
     
     //удалить существующую запись
-    public void DeleteUser(User entity)
+    public void DeleteUser(AppUser entity)
     {
         throw new Exception("Exception --GetUserId(int id) ---Not  implement  exception");
         // context.Users.Remove(entity);

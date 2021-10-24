@@ -8,7 +8,7 @@
   </ItemGroup>
   <ItemGroup>
    
-    <ProjectReference Include="..\ShopDb\ShopDb.csproj" />
+    <ProjectReference Include="..\ShopDb\X01Db.csproj" />
   </ItemGroup>
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>

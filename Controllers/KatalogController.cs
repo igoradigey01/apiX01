@@ -25,6 +25,13 @@ namespace ShopAPI.Controllers
             //  throw new Exception("NOt Implimetn Exception");
         }
 
+        [HttpGet]
+        public async Task<IEnumerable<Product>> Get(int id)
+        {
+            return await _repository.Get(id);
+            //  throw new Exception("NOt Implimetn Exception");
+        }
+
 
         // api/katalog (post) создать
         [HttpPost]
