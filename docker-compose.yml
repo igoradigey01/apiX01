@@ -34,7 +34,7 @@ services:
     volumes:
       - ./mysql:/usr/sbin/mysql
     environment:          
-        MYSQL_ROOT_PASSWORD: 747Ii81FN3DL
+        MYSQL_ROOT_PASSWORD: #######
         MYSQL_DATABASE: AuthUserDB
     ports:
       - 3306:3306
