@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ShopAPI.Model
 {
-    public class LoginInputModel
+    public class LoginInputModelDto
     {
      
         public string ReturnUrl { get; set; }

@@ -1,33 +1,7 @@
-using Microsoft.AspNetCore.Http;
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Collections.Generic;
+﻿using System;
 
 namespace ShopAPI.Model
 {
-    // class передачи сообщений Validation между repository adn controllers
-    public class FlagValid
-    {
-        public bool Flag { get; set; }
-        public string Message { get; set; }
-        public object Item { get; set; }
-    }
-
-   
-
-    // не реализован  -temp --Create, Read, Update & Delete 
-    public interface ICRUD
-    {
-        public object[] Get(int id);
-        public object Item(int id);
-        public bool Create(object item);
-        public bool Update(object item);
-        public bool Delete(object item);
-
-
-    }
-
-
     /*
         public class ModelSerialize : IValidatableObject
         {

@@ -11,45 +11,51 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using ShopAPI.Models;
+
+using AutoMapper;
+using Microsoft.AspNetCore.WebUtilities;
+using NETCore.MailKit.Core;
+using EmailService;
+
 
 namespace ShopAPI.Controllers
 {
-
 
     [ApiController]
     [Route("api/[controller]")]
     public class AccountController : ControllerBase
     {
-        public readonly UserManager<AppUser> _userManager;
-        public readonly SignInManager<AppUser> _loginManager;
-        private readonly AuthRepository _repository;
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _loginManager;
+        private readonly IMapper _mapper;
+        private readonly IEmailSender _emailSender;
 
 
         public AccountController(
-            UserManager<AppUser> userManager,
-            SignInManager<AppUser> signInManager
+            UserManager<User> userManager,
+            SignInManager<User> signInManager,
+            IMapper mapper,
+            IEmailSender emailSender
                        )
         {
             _userManager = userManager;
             _loginManager = signInManager;
+            _mapper = mapper;
+            _emailSender = emailSender;
 
         }
 
 
-
-        //////////-------------------------------Контроллеры-------------------
-
-        [Route("Login")]
-        // [Route("[action]")]
-        [HttpPost]
-        public async Task<IActionResult> PassLogInAsync([FromBody] LoginInputModel login)
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login([FromBody]LoginInputModelDto login) //[FromBody] LoginInputModel login
         {
 
-            //  Console.WriteLine("PassLogInAsync ----",login.Email);
+            Console.WriteLine("PassLogInAsync ----", login.Email);
 
             if (login == null)
             {
-                return BadRequest("PassLogIn-- Invalid client request");
+                return BadRequest(" Неверный запрос клиента");
             }
 
             // var user = await _userManager.FindByEmailAsync(model.UserName); //??? 
@@ -57,33 +63,33 @@ namespace ShopAPI.Controllers
             if (user == null)
             {
                 ModelState.AddModelError("username", "пользователь не найден!");
+                return Unauthorized("пользователь не найден!");
             }
+
+            if (!await _userManager.IsEmailConfirmedAsync(user))
+            {
+                ModelState.AddModelError("email", "Электронная почта не подтверждена!");
+                return Unauthorized("Email не подтвержден");
+            }
+
             var result = await _loginManager.PasswordSignInAsync(user, login.Password, login.RememberMe, lockoutOnFailure: true);
             if (result.Succeeded)
             {
 
                 var accessToken = GenerateTokenAsync(user).Result;
                 var refreshToken = "";
-                //  var rest=new{access_token=token};
 
-                //  var access_token = JsonSerializer.Serialize( token);
-                /*  return Ok(new
-                  {
-                      access_token = accessToken,
-                      refresh_token = refreshToken
-                  });*/
-                return Ok(new TokenApiModel { access_token = accessToken, refresh_token = refreshToken });
+                return Ok(new TokenModelDto { access_token = accessToken, refresh_token = refreshToken });
             }
 
-            //     return Unauthorized(); */
-            return BadRequest("ошибка что-то пошло не так ");
+            // return Unauthorized();
+            return Unauthorized("неверный пароль "); //неверный пароль
 
 
         }
 
         /// FaceBook VK Instogramm singIn 04.08.21
-        [HttpPost]
-        [Route("[action]")]
+        [HttpPost("ExternalLogin")]
         public IActionResult ExternalLogin(string provider, string returnUrl)
         {
             throw new Exception("not Empliment - ExternalLogin");
@@ -93,213 +99,130 @@ namespace ShopAPI.Controllers
             return Challenge(properties, provider); */
         }
 
-        [Route("Register")]
-        [HttpPost]
-        public IActionResult RegisterNewUser([FromBody] UserSerialize user)
+        //[Route("Register")]
+        [HttpPost("Registration")]
+        public async Task<IActionResult> RegisterUser([FromBody] UserForRegistrationDto userForRegistration)
         {
+            if (userForRegistration == null || !ModelState.IsValid)
+                return BadRequest("данные не валидны");
 
-            Console.WriteLine("---------------------------");
-            Console.WriteLine(user.Name);
+            var user = _mapper.Map<User>(userForRegistration);
 
-            AppUser newUser = new AppUser();  //{Role=Role.User};16.09.21
-            //-----------------
-            if (user.Password == null)
+            var result = await _userManager.CreateAsync(user, userForRegistration.Password);
+            if (!result.Succeeded)
             {
-                ModelState.AddModelError("Password", "Незадан Пароль");
+                var errors = result.Errors.Select(e => e.Description);
 
+                return BadRequest(new RegistrationResponseDto { Errors = errors });
             }
-            newUser.Password = user.Password;
 
-            //--------------------------------------------
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var param = new Dictionary<string, string>
+            {
+                {"token", token },
+                {"email", user.Email }
+            };
 
-            if (user.Phone == null)
-            {
-                ModelState.AddModelError("Phone", "Незадан Номер Телефона");
-                return BadRequest(ModelState);
+            var callback = QueryHelpers.AddQueryString(userForRegistration.ClientURI, param);
 
-            }
-            if (_repository.ValidatePhoneUser(user.Phone))
+            try
             {
-                newUser.Phone = user.Phone;
+
+                var message = new Message(new string[] { user.Email }, "Токен подтверждения электронной почты,Возможно Почта недействительна", callback, null);
+                await _emailSender.SendEmailAsync(message);
             }
-            else
+            catch
             {
-                ModelState.AddModelError("Phone", "Такой Номер Телефона Уже Существует");
-                return BadRequest(ModelState);
+                
+                 await _userManager.DeleteAsync(user);
+
+                return BadRequest("Токен подтверждения электронной почты неотправлен");
             }
-            //-------------------------------------------
-            if (user.Email != null)
-            {
-                if (_repository.ValidateEmailUser(user.Email))
-                {
-                    newUser.Email = user.Email;
-                }
-                else
-                {
-                    ModelState.AddModelError("Email", "Такой Email Уже Существует");
-                    return BadRequest(ModelState);
-                }
-            }
-            //-----------------------------
-            newUser.Name = user.Name;
-            newUser.Address = user.Address;
+
+            await _userManager.AddToRoleAsync(user,Role.Shopper);  //'shopper'
+
+            return StatusCode(201);
+        }
+
+        [HttpPost("ForgotPassword")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotPasswordDto)
+        {
             if (!ModelState.IsValid)
+                return BadRequest();
+
+            var user = await _userManager.FindByEmailAsync(forgotPasswordDto.Email);
+            if (user == null)
+                return BadRequest("Invalid Request");
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var param = new Dictionary<string, string>
             {
-                return BadRequest(ModelState);
-            }
-            _repository.CreateUser(newUser);
+                {"token", token },
+                {"email", forgotPasswordDto.Email }
+            };
+
+            var callback = QueryHelpers.AddQueryString(forgotPasswordDto.ClientURI, param);
+
+            var message = new Message(new string[] {forgotPasswordDto.Email }, "сбросить  пароль ", callback, null);
+            await _emailSender.SendEmailAsync(message);
 
             return Ok();
+        }
 
-            // return Ok("Regiser new User");
-            /*
-             // обработка частных случаев валидации
-            if (user.Age == 99)
-                ModelState.AddModelError("Age", "Возраст не должен быть равен 99");
- 
-            if (user.Name == "admin")
-            {
-                ModelState.AddModelError("Name", "Недопустимое имя пользователя - admin");
-            }
-            // если есть лшибки - возвращаем ошибку 400
+
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
+        {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
- 
-            // если ошибок нет, сохраняем в базу данных
-            db.Users.Add(user);
-            await db.SaveChangesAsync();
-            return Ok(user);
-            */
+                return BadRequest();
 
-            // throw new NotImplementedException();
+            var user = await _userManager.FindByEmailAsync(resetPasswordDto.Email);
+            if (user == null)
+                return BadRequest("Invalid Request");
+
+            var resetPassResult = await _userManager.ResetPasswordAsync(user, resetPasswordDto.Token, resetPasswordDto.Password);
+            if (!resetPassResult.Succeeded)
+            {
+                var errors = resetPassResult.Errors.Select(e => e.Description);
+
+                return BadRequest(new { Errors = errors });
+            }
+
+            return Ok();
         }
 
-        [Route("Profile")]
-        [Authorize]
-        [HttpGet]
-        public IActionResult GetUserProfile()
+
+        [HttpGet("EmailConfirmation")]
+        public async Task<IActionResult> EmailConfirmation([FromQuery] string email, [FromQuery] string token)
         {
-            //int i=this.HttpContext.Request.Headers.Count;
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                return BadRequest("Invalid Email Confirmation Request");
 
-            /*
-            foreach (var item in this.HttpContext.Request.Headers)
-            {
-                 Console.WriteLine(item.Value);
-                
-            }
-            */
+            var confirmResult = await _userManager.ConfirmEmailAsync(user, token);
+            if (!confirmResult.Succeeded)
+                return BadRequest("Invalid Email Confirmation Request");
 
-
-            // Console.WriteLine(this.HttpContext.Request.Headers.ToArray());
-            var idUserClaim = this.HttpContext.User.Claims.FirstOrDefault();
-
-            // Console.WriteLine("test Profile");
-
-            // Console.WriteLine(""+this.HttpContext.ToString());
-            // id  должен быть первым в cla
-            //FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
-            if (idUserClaim != null)
-            {
-                int idUser = int.Parse(idUserClaim.Value);
-                var user = _repository.GetUserId(idUser);
-                UserSerialize userSerialize = new UserSerialize();
-                userSerialize.Name = user.Name;
-                userSerialize.Address = user.Address;
-                userSerialize.Email = user.Email;
-                userSerialize.Phone = user.Phone;
-                userSerialize.Password = user.Password;
-                // Console.WriteLine("User Profile get httpGet ok");
-
-                return Ok(userSerialize);
-            }
-            else
-            {
-                ModelState.AddModelError("User", "Данный Пользоватль Несуществует - обратитесь к Администратору ресурса");
-                Console.WriteLine("User Profile get httpGet BadRequst");
-                return BadRequest(ModelState);
-            }
-            // throw new NotImplementedException();
+            return Ok();
         }
 
-        //---------------------------------------------------------------------------------
-
-        [Route("Edit")]
+        //--------------------------------------------
+        [HttpGet("IsTokenValid")]
         [Authorize]
-        [HttpPost]
-        public IActionResult SetUserProfile(UserSerialize userSerialize)
-        {
-            Console.WriteLine("SetUserProfile-----------Start--");
-
-            var idUserClaim = this.HttpContext.User.Claims.FirstOrDefault();
-
-
-            if (idUserClaim != null)
-            {
-                int idUser = int.Parse(idUserClaim.Value);
-                var user = _repository.GetUserId(idUser);
-
-                if (userSerialize.Name != user.Name)
-                {
-                    user.Name = userSerialize.Name;
-                }
-                if (userSerialize.Address != user.Address)
-                {
-                    user.Address = userSerialize.Address;
-                }
-                if (userSerialize.Email != user.Email)
-                {
-                    user.Email = userSerialize.Email;
-                }
-                if (userSerialize.Phone != user.Phone)
-                {
-                    user.Phone = userSerialize.Phone;
-                }
-                if (userSerialize.Password != user.Password)
-                {
-                    user.Password = userSerialize.Password;
-                }
-                // Console.WriteLine("User Profile get httpGet ok");
-                _repository.SaveUser(user);
-                //throw new NotImplementedException();
-
-                return Ok();
-
-            }
-            else
-            {
-                ModelState.AddModelError("User", "Данный Пользоватль Несуществует - обратитесь к Администратору ресурса");
-                Console.WriteLine("User Profile get httpGet BadRequst");
-                return BadRequest(ModelState);
-            }
-            // throw new NotImplementedException();
-
-
-        }
-
-        //----------------------------------
-        [Route("Delete")]
-        [Authorize(Roles = Role.Admin)]
-        [HttpDelete]
-        public IActionResult DeleteUserProfileserProfile()
-        {
-            throw new NotImplementedException();
-        }
-
-        ///-------------------------------------------------------------------------------------
-        [HttpGet]
-        [Route("IsValid")]
-        [Authorize]
-        public IActionResult Get()
+        public IActionResult IsTokenValid()
         {
             Console.WriteLine("isValid get ok");
-
+            // this is sample--- return for Json
+            //  return Json(isValid);
+            // return Json(new { isValid = isValid.ToString() });
+            // return Ok(new { isValid = isValid.ToString() });
             return Ok();
 
         }
 
 
         //////////////////////------------------Создаем Токен-----------------------------------
-        private async Task<string> GenerateTokenAsync(AppUser user)
+        private async Task<string> GenerateTokenAsync(User user)
         {
             var userRoles = await _userManager.GetRolesAsync(user);
 
@@ -307,7 +230,8 @@ namespace ShopAPI.Controllers
 
 
             var claims = new List<Claim> {
-                 new Claim(JwtRegisteredClaimNames.NameId, user.UserName) ,
+                 new Claim(JwtRegisteredClaimNames.NameId, user.Id) ,
+                // new Claim(JwtRegisteredClaimNames.NameId,user.Id),
               //  new Claim(ClaimsIdentity.DefaultRoleClaimType,) // частный случай авторизации на основе claims, 
                  //так как роль(role) это тот же объект Claim, имеющий тип ClaimsIdentity.DefaultRoleClaimType
                  
@@ -341,62 +265,12 @@ namespace ShopAPI.Controllers
 
             return tokenHandler.WriteToken(token);
         }
-        /////////////------------Проверяем User и Создаем утверждения для токена.----------------------------------------
-        /*  private ClaimsIdentity GetUserIdentity(string email, string password)
-         {
-                    AppUser user = AuthUser(email,password);
-                    if (user != null)
-                    {
-                        var claims = new List<Claim>
-                        {
-                            new Claim(ClaimsIdentity.DefaultNameClaimType, user.Id.ToString()),
-                          //  new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role.ToString()) 16.09.21
-                        };
-                        ClaimsIdentity claimsIdentity =
-                        new ClaimsIdentity(claims, "access_token", ClaimsIdentity.DefaultNameClaimType,
-                            ClaimsIdentity.DefaultRoleClaimType);
-                        return claimsIdentity;
-                    }
-
-                    // если пользователя не найдено
-                    return null;
-        } */
 
 
 
-
-
-        //////////////////-----------------------------------------------------
-
-        /* public bool ValidateCurrentToken(string token)
-        {
-            var mySecret = _authOptions.Secret;
-            var mySecurityKey =_authOptions.GetSymmerySecuritiKey();
-
-            var myIssuer = _authOptions.Issuer;
-            var myAudience = _authOptions.Audience;
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            try
-            {
-                tokenHandler.ValidateToken(token, new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidIssuer = myIssuer,
-                    ValidAudience = myAudience,
-                    IssuerSigningKey = mySecurityKey
-                }, out SecurityToken validatedToken);
-            }
-            catch
-            {
-                return false;
-            }
-            return true;
-        } */
 
 
 
     }
 }
+    

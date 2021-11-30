@@ -1,6 +1,6 @@
 namespace ShopAPI.Model
 {
-    public class TokenApiModel
+    public class TokenModelDto
     {
         public string access_token { get; set; }
 

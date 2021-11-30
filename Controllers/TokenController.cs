@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ShopAPI.Model;
+using ShopAPI.Models;
 using System;
 using System.Threading.Tasks;
 
@@ -15,11 +16,11 @@ namespace ShopAPI.Controllers
     {
 
         readonly ITokenService tokenService;
-        readonly UserManager<AppUser> _userManager;
-        readonly SignInManager<AppUser> _loginManager;
+        readonly UserManager<User> _userManager;
+        readonly SignInManager<User> _loginManager;
         public TokenController(
-            UserManager<AppUser> userManager,
-            SignInManager<AppUser> signInManager,
+            UserManager<User> userManager,
+            SignInManager<User> signInManager,
             ITokenService tokenService
             )
         {
@@ -29,7 +30,7 @@ namespace ShopAPI.Controllers
         }
         [HttpPost]
         [Route("refresh")]
-        public async Task<IActionResult > RefreshAsync(TokenApiModel tokenApiModel)
+        public async Task<IActionResult > RefreshAsync(TokenModelDto tokenApiModel)
         {
             if (tokenApiModel is null)
             {
@@ -58,7 +59,7 @@ namespace ShopAPI.Controllers
                     accessToken = newAccessToken,
                     refreshToken = newRefreshToken
                 });*/
-                var _rezult = new TokenApiModel { access_token = newAccessToken, refresh_token = newRefreshToken };
+                var _rezult = new TokenModelDto { access_token = newAccessToken, refresh_token = newRefreshToken };
                 return Ok( _rezult);
             }
             return BadRequest(" -RefreshAsync- Invalid client request");

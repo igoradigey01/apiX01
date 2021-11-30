@@ -40,17 +40,17 @@ namespace ShopAPI.Model
             return await _db.Products.Where(p=>p.Id==id).FirstOrDefaultAsync();
         }
                //-------------------------------------
-        public async Task<FlagValid> UpdateImage(Image item){
+        public async Task<RepositoryResponseDto > UpdateImage(Image item){
            
            throw new Exception("not implimetn exeption 14.11.20");
         }       
-        public async Task<FlagValid> CreateImage(Image item)
+        public async Task<RepositoryResponseDto > CreateImage(Image item)
         {
             await _db.Images.AddAsync(item);
             int i = await _db.SaveChangesAsync();
 
             //  Console.WriteLine("async Task<bool> Add(Katalog item)-----------"+i.ToString()+"_db.Entry.State--"+_db.Entry(item).State.ToString());
-            FlagValid  flag=new FlagValid{Flag=false,Message=null,Item=null};
+            RepositoryResponseDto   flag=new RepositoryResponseDto {Flag=false,Message=null,Item=null};
            if(i!=0){
               flag.Message="БД Images add ok!";
               flag.Flag=true;
@@ -65,9 +65,9 @@ namespace ShopAPI.Model
            }
         }
         
-        public async Task<FlagValid> DeleteImage(Image item)
+        public async Task<RepositoryResponseDto > DeleteImage(Image item)
         {
-               FlagValid  flag=new FlagValid{Flag=false,Message=null,Item=null};
+               RepositoryResponseDto   flag=new RepositoryResponseDto {Flag=false,Message=null,Item=null};
                int i=0;
 
                try{

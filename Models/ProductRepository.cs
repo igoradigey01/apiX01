@@ -39,9 +39,9 @@ namespace ShopAPI.Model
             return item;
         }
 
-        public async Task<FlagValid> Create(Product item)
+        public async Task<RepositoryResponseDto > Create(Product item)
         {
-            var flag = new FlagValid { Flag = false, Item = null, Message = "" };
+            var flag = new RepositoryResponseDto  { Flag = false, Item = null, Message = "" };
             // db.Users.Add(user);
             if (item.KatalogId == -1)
             {
@@ -78,19 +78,19 @@ namespace ShopAPI.Model
 
         }
         //Обновляет значения в бд но не img (photo)
-        public async Task<FlagValid> Update(Product item)
+        public async Task<RepositoryResponseDto > Update(Product item)
         {
             bool flag_edit = false;
 
             Product selectItem = await _db.Products.FirstOrDefaultAsync(x => x.Id == item.Id);
 
             //   var flagValid=new FlagValid {Flag=false,ErrorMessage=""};
-            var flag = new FlagValid { Flag = false, Item = null, Message = "" };
+            var flag = new RepositoryResponseDto  { Flag = false, Item = null, Message = "" };
 
 
             if (selectItem == null)
             {
-                return new FlagValid { Flag = false, Message = "Товар с таким id  в БД ненайден" };
+                return new RepositoryResponseDto  { Flag = false, Message = "Товар с таким id  в БД ненайден" };
             }
             // проверка на уникльность
             if (item.KatalogId == -1)
@@ -168,10 +168,10 @@ namespace ShopAPI.Model
 
         }
 
-        public async Task<FlagValid> Delete(Product item)
+        public async Task<RepositoryResponseDto > Delete(Product item)
         {
 
-            FlagValid flag = new FlagValid { Flag = false, Message = null, Item = null };
+            RepositoryResponseDto  flag = new RepositoryResponseDto  { Flag = false, Message = null, Item = null };
             int i = 0;
 
 
@@ -208,7 +208,7 @@ namespace ShopAPI.Model
 
         }
 
-        public async Task<FlagValid> DeleteChildImage(Image item)
+        public async Task<RepositoryResponseDto > DeleteChildImage(Image item)
         {
             throw new Exception("NOt Implimetn Exception");
 

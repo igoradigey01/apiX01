@@ -1,7 +1,7 @@
 ﻿{
-  
+
   "profiles": {
-   
+
     "AuthApi": {
       "commandName": "Project",
       "launchBrowser": false,
@@ -9,7 +9,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_URLS": "http://localhost:5010",
-        "FrontClient":"http://localhost:4200",
+        "FrontClient": "http://localhost:4200",
         "ClientSecrets": "client_secret_swagger",
         "Issuer": "http://localhost:5010",
         "Audience": "http://localhost:4200 ",
@@ -17,9 +17,16 @@
         "AdminPass": "i-1965",
         "AdminEmail": "admin@x-01.ru",
         "AdminPhone": "+79002440328",
-        "ConnectString": "server=127.0.0.1;port=3306;UserId=root;Password=747Ii81FN3DL;"
+        "ConnectString": "server=127.0.0.1;port=3306;UserId=root;Password=747Ii81FN3DL;",
+        "From": "admin@x-01.ru",
+        "SmtpServer": "smtp.mail.ru",
+        "Port": "465",
+        "Username": "admin@x-01.ru",
+        "Password": "Jwv3nXsTY84qZysFAnUu"
 
       }
+     
     }
+    
   }
 }

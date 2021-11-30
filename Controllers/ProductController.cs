@@ -204,7 +204,7 @@ namespace ShopAPI.Controllers
             var item_loads_Images=await _repository.ItemLoadChild(item);
             List<string> images=item_loads_Images.Images.Select(i=>i.Name).ToList<string>();
             images.Add(item.Image);
-            FlagValid flag=await _repository.Delete(item_loads_Images);
+            RepositoryResponseDto  flag=await _repository.Delete(item_loads_Images);
             if (!flag.Flag)
             {
                 return BadRequest(flag.Message);

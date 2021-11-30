@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Text;
 using ShopAPI.Model;
+using ShopAPI.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Options;
@@ -18,6 +19,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Microsoft.AspNetCore.Identity;
+using EmailService;
 
 
 
@@ -49,6 +51,24 @@ namespace ShopAPI
             services.AddTransient<ProductItemRepository>();
             services.AddTransient<ITokenService, TokenService>();
 
+            services.AddAutoMapper(typeof(Startup)); //18.11.21
+            
+             int _potr = int.TryParse(Environment.GetEnvironmentVariable("Port"), out _potr) ? _potr : 465;
+            var emailConfig = new EmailConfiguration
+            {
+                From = Environment.GetEnvironmentVariable("From"),
+                SmtpServer = Environment.GetEnvironmentVariable("SmtpServer"),
+                Port = _potr,
+                Password = Environment.GetEnvironmentVariable("Password"),
+                UserName = Environment.GetEnvironmentVariable("UserName")
+
+
+            };
+           
+            services.AddSingleton<IEmailSender> (new EmailSender( emailConfig)); //23.11.21
+         
+
+
             services.AddControllers();
 
             services.AddCors(option => option.AddPolicy("DefaultPolicy", builder => builder
@@ -76,9 +96,12 @@ namespace ShopAPI
             ));
 
              // затем подключаем сервисы Identity
-            services.AddIdentity<AppUser,IdentityRole> ()
+            services.AddIdentity<User,IdentityRole> ()
                     .AddEntityFrameworkStores<AppIdentityDbContext>()
                    .AddDefaultTokenProviders();
+
+            services.Configure<DataProtectionTokenProviderOptions>(opt =>
+               opt.TokenLifespan = TimeSpan.FromHours(2));
 
 
             services.AddAuthentication(

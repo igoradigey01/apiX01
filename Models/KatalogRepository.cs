@@ -36,8 +36,8 @@ namespace ShopAPI.Model
 
         }
 
-        public async Task<FlagValid> Add(Katalog item){             
-                FlagValid flag=new FlagValid{Flag=false,Message=null};
+        public async Task<RepositoryResponseDto > Add(Katalog item){             
+                RepositoryResponseDto  flag=new RepositoryResponseDto {Flag=false,Message=null};
                // db.Users.Add(user);
              await _db.Katalogs.AddAsync(item);  
               int i=  await _db.SaveChangesAsync() ;
@@ -56,10 +56,10 @@ namespace ShopAPI.Model
               }
          }
 
-          public async Task< FlagValid> Update(Katalog item){
+          public async Task< RepositoryResponseDto > Update(Katalog item){
              //  throw new Exception("NOt Implimetn Exception");
            //   Console.WriteLine("async Task<bool> Update(Katalog item)------_db.Kagalog.Any-----"+item.Id.ToString()+" "+item.Name);
-             FlagValid  flag=new FlagValid{Flag=false,Message=null,Item=null};
+             RepositoryResponseDto   flag=new RepositoryResponseDto {Flag=false,Message=null,Item=null};
              Katalog selectItem= await _db.Katalogs.FirstOrDefaultAsync(x=>x.Id==item.Id);
             
              
@@ -91,10 +91,10 @@ namespace ShopAPI.Model
                
           }
 
-          public async Task< FlagValid> Delete(int id){
-             FlagValid flagValid=new FlagValid{Flag=false,Message=""};
+          public async Task< RepositoryResponseDto > Delete(int id){
+             RepositoryResponseDto  flagValid=new RepositoryResponseDto {Flag=false,Message=""};
               
-                Katalog item = _db.Katalogs.FirstOrDefault(x => x.Id == id);
+                Katalog item = await _db.Katalogs.FirstOrDefaultAsync(x => x.Id == id);
             if (item == null)
             {
               flagValid.Message="Каталога с таким id не существует!";

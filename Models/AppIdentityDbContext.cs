@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using System;
 
-namespace ShopAPI.Model
+namespace ShopAPI.Models
 {
-    public class AppIdentityDbContext : IdentityDbContext<AppUser>
+    public class AppIdentityDbContext : IdentityDbContext<User>
     {
         public AppIdentityDbContext(DbContextOptions<AppIdentityDbContext> options)
            : base(options)
@@ -47,11 +47,11 @@ namespace ShopAPI.Model
 
             );
 
-            var passHash = new PasswordHasher<AppUser>();
+            var passHash = new PasswordHasher<User>();
 
-            builder.Entity<AppUser>().HasData(
+            builder.Entity<User>().HasData(
 
-                new AppUser
+                new User
                 {
                     Id = ADMIN_ID,
                     UserName = "admin",

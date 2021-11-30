@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using ShopAPI.Model;
+using ShopAPI.Models;
 using System.Collections.Generic;
 //-----------------
 using System.Security.Claims;
@@ -15,10 +15,10 @@ namespace ShopAPI.Controllers
     [Route("api/[controller]")]
     public class RoleController : ControllerBase
     {
-        private readonly UserManager<AppUser> userManager;
+        private readonly UserManager<User> userManager;
 
         public RoleController(
-            UserManager<AppUser> userManager
+            UserManager<User> userManager
             )
         {
             this.userManager = userManager;
