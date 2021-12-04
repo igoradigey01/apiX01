@@ -17,17 +17,10 @@ namespace ShopAPI
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-
-            .ConfigureAppConfiguration((hostingContext, config) =>
-            {
-                config.AddJsonFile("MyConfig.json",
-                    optional: true,
-                    reloadOnChange: true);
-            })
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+          Host.CreateDefaultBuilder(args)
+              .ConfigureWebHostDefaults(webBuilder =>
+              {
+                  webBuilder.UseStartup<Startup>();
+              });
     }
 }

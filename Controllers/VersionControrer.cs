@@ -18,7 +18,7 @@ namespace ShopAPI.Controllers
     public class VersionController : ControllerBase
     {
        
-        string _vertion=" v0.4.8-beta-(15.09.21)--debug  vertion-- aspnetcore -net5.0";
+        string _vertion=" v0.4.8-beta-(01.11.21)--debug  vertion-- aspnetcore -net5.0";
         string _description="Create Identity net core model";
 
 

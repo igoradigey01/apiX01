@@ -9,4 +9,4 @@ WORKDIR /app
 COPY  ./published .
 EXPOSE 80
 
-ENTRYPOINT ["dotnet", "ShopApi.dll"]
+ENTRYPOINT ["dotnet", "X01Api.dll"]

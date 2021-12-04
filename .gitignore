@@ -1,5 +1,6 @@
 *.temp.*   
 *.sln
+launchSettings.json
 MyConfig.json
 .vs/
 

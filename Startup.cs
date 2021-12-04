@@ -71,12 +71,14 @@ namespace ShopAPI
 
             services.AddControllers();
 
-            services.AddCors(option => option.AddPolicy("DefaultPolicy", builder => builder
-                   .WithOrigins(Environment.GetEnvironmentVariable("FrontClient"))
+            services.AddCors(
+                option => option.AddDefaultPolicy( builder => builder
+                   .WithOrigins( Environment.GetEnvironmentVariable("FrontClient"))
                    // .AllowAnyOrigin()
                    .AllowAnyHeader()
                    .AllowAnyMethod()
                   .AllowCredentials()
+                
                   ));
 
             //   var authConfig = Configuration.GetSection("Auth");
@@ -156,7 +158,7 @@ namespace ShopAPI
             app.UseRouting();
             //-------  Cors all servers------------
 
-            app.UseCors("DefaultPolicy");
+            app.UseCors();
 
             //15.09.21
             app.UseForwardedHeaders(new ForwardedHeadersOptions
