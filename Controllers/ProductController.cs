@@ -24,6 +24,7 @@ namespace ShopAPI.Controllers
 
         private readonly ImageRepository _imageRepository;
 
+
         public ProductController(
             ProductRepository repository,
             ImageRepository imageRepository
@@ -43,15 +44,14 @@ namespace ShopAPI.Controllers
         }
 
         // api/product (post) создать
-        [HttpPost]
+        [HttpPost("SaveAll")]
         public async Task<ActionResult<Product>> Post()
         {
-            // throw new Exception("NOt Implimetn Exception");
+          
             Product item = new Product();
-            //  Console.WriteLine("api/katalog (post) создать --------");
-
-
+     
             IFormCollection form = await Request.ReadFormAsync();
+
             if (form == null)
             {
                 return BadRequest("angular form data ==null");
@@ -60,8 +60,16 @@ namespace ShopAPI.Controllers
 
             // ModelSerialize itemSerialize=form as ModelSerialize; не работает
             item.Name = form["name"];
+            item.Name= item.Name.Trim();
 
-            if (!_repository.NameUnique(item.Name))
+            string katalogName = form["katalogName"];
+            if (!item.Name.StartsWith(katalogName))
+            {
+                item.Name = katalogName + " " + item.Name;
+            }
+            
+
+             if (!_repository.NameUnique(item.Name))
             {
                 return BadRequest("Такое название  уже существует!");
             }
@@ -78,38 +86,25 @@ namespace ShopAPI.Controllers
             item.Price = int.Parse(form["price"]);
             item.Markup = int.Parse(form["markup"]);
             item.Description = form["description"];
-            string imgBase64String = form["imageBase64"];
 
-            if (String.IsNullOrEmpty(imgBase64String))
+
+            var file = form.Files[0] as IFormFile;
+            if (file != null)
             {
-                return BadRequest("angular form data item.imageBase64==null ");
+                var imgName = _imageRepository.RamdomName;
+
+                _imageRepository.Save(imgName, file.OpenReadStream());
+
+                item.Image = imgName;
+            }
+            else
+            {
+                item.Image = "not_found";
 
             }
 
-            //  var file = form.Files[0] as IFormFile;
-            //  Console.WriteLine("molel controller post file name---"+file.Name);
-
-            var typeFile = "temp.png";
-            var imgName =
-            _imageRepository.GetImgRamdomName(
-                 typeFile
-                 );
-             byte[] blobimg=_imageRepository.Base64ImgConvertor(imgBase64String);
-             if(blobimg==null){
-                  return BadRequest("angular form data item.imageBase64 img not png  format-- ");
-             }
-
-            _imageRepository.Save(imgName, blobimg);;
-       //   _imageRepository.SaveBase64Img(path,imgBase64String);
-
-            // _imageRepository.Save(path, file);
-            item.Image = imgName;
-
-
-
-
             // Console.WriteLine("Task< ActionResult<Model>> Post(Model item)----"+item.Name +"-"+item.Id+"-"+item.KatalogId);
-            var flag=await _repository.Create(item);
+            var flag = await _repository.Create(item);
 
             if (flag.Flag)
             {
@@ -128,7 +123,7 @@ namespace ShopAPI.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<Product>> Put(int id)
         {
-        //  throw new Exception("NOt Implimetn Exception");
+            //  throw new Exception("NOt Implimetn Exception");
             Product item = new Product();
             IFormCollection form = await Request.ReadFormAsync();
             if (form == null)
@@ -157,26 +152,29 @@ namespace ShopAPI.Controllers
 
             //  var file = form.Files[0] as IFormFile;
             //  Console.WriteLine("molel controller post file name---"+file.Name);
-           var imgName=   item.Image=form["image"];
+            var imgName = item.Image = form["image"];
 
-             if(imgName.Length!=40){
-            var typeFile = "temp.png";
-             imgName =_imageRepository.GetImgRamdomName( typeFile);
-             }
-                Console.WriteLine(" if(item.Image.Length!=40){----"+item.Image.Length.ToString()+"---"+item.Image);
-           
-              byte[] blobimg=null;
-          //  
-              if(imgBase64String.Length>0){
-                blobimg=_imageRepository.Base64ImgConvertor(imgBase64String);
-              }
-              else return BadRequest("angular form data item.imageBase64 img Null-- ");
-             if(blobimg==null){
-                  return BadRequest("angular form data item.imageBase64 img not png  format-- ");
-             }
+            if (imgName.Length != 40)
+            {
+                var typeFile = "temp.png";
+                imgName = _imageRepository.GetImgRamdomName(typeFile);
+            }
+            Console.WriteLine(" if(item.Image.Length!=40){----" + item.Image.Length.ToString() + "---" + item.Image);
 
-            _imageRepository.Update(imgName, blobimg);;
-       //   _imageRepository.SaveBase64Img(path,imgBase64String);
+            byte[] blobimg = null;
+            //  
+            if (imgBase64String.Length > 0)
+            {
+                blobimg = _imageRepository.Base64ImgConvertor(imgBase64String);
+            }
+            else return BadRequest("angular form data item.imageBase64 img Null-- ");
+            if (blobimg == null)
+            {
+                return BadRequest("angular form data item.imageBase64 img not png  format-- ");
+            }
+
+            _imageRepository.Update(imgName, blobimg); ;
+            //   _imageRepository.SaveBase64Img(path,imgBase64String);
 
             // _imageRepository.Save(path, file);
             item.Image = imgName;
@@ -196,26 +194,27 @@ namespace ShopAPI.Controllers
 
         // DELETE api/katalog/5
         [HttpDelete("{id}")]
-       // [Authorize]
+        // [Authorize]
         public async Task<ActionResult> Delete(int id)
         {
             // throw new Exception("NOt Implimetn Exception");
-            Product item=await _repository.Item(id);
-            var item_loads_Images=await _repository.ItemLoadChild(item);
-            List<string> images=item_loads_Images.Images.Select(i=>i.Name).ToList<string>();
+            Product item = await _repository.Item(id);
+            var item_loads_Images = await _repository.ItemLoadChild(item);
+            List<string> images = item_loads_Images.Images.Select(i => i.Name).ToList<string>();
             images.Add(item.Image);
-            RepositoryResponseDto  flag=await _repository.Delete(item_loads_Images);
+            RepositoryResponseDto flag = await _repository.Delete(item_loads_Images);
             if (!flag.Flag)
             {
                 return BadRequest(flag.Message);
             }
-            foreach(var i in images){
+            foreach (var i in images)
+            {
                 _imageRepository.Delete(i);
             }
 
-                return Ok();
+            return Ok();
 
-       
+
         }
 
 

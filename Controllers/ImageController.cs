@@ -16,15 +16,13 @@ namespace ShopAPI.Controllers
     [Route("api/[controller]")]
     public class ImageController : ControllerBase
     {
-        //-----------------------------
-        string[] _l = new[] { "один", "два", "Три-test" };
 
         readonly ImageRepository _imageRepository;
 
 
-        public ImageController( ImageRepository imageRepository )
+        public ImageController(ImageRepository imageRepository)
         {
-              _imageRepository = imageRepository;
+            _imageRepository = imageRepository;
 
         }
 

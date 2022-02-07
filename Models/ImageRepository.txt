@@ -1,0 +1,4 @@
+﻿
+https://github.com/dlemstra/Magick.NET/blob/main/docs/ReadingImages.md
+https://github.com/dlemstra/Magick.NET/blob/main/docs/ReadingImages.md
+https://github.com/dlemstra/Magick.NET/tree/main/docs

@@ -29,22 +29,22 @@ namespace ShopAPI.Model
             return await _db.TypeProducts.ToListAsync();
         }
 
-        public async Task<TypeProduct>Item(int id){
+        public async Task<TypeProduct> Item(int id){
 
                throw new Exception("not implimetn exeption 14.11.20");
         }
 
-        public async Task<RepositoryResponseDto > Create(TypeProduct typeProduct)
+        public async Task<RepositoryResponseDto> Create(TypeProduct typeProduct)
         {
             throw new Exception("not implimetn exeption 14.11.20");
             // return await _db.TypeProduct.ToListAsync();
         }
-        public async Task<RepositoryResponseDto > Update(TypeProduct typeProduct)
+        public async Task<RepositoryResponseDto> Update(TypeProduct typeProduct)
         {
             throw new Exception("not implimetn exeption 14.11.20");
             // return await _db.TypeProduct.ToListAsync();
         }
-        public async Task<RepositoryResponseDto > Delete(int id)
+        public async Task<RepositoryResponseDto> Delete(int id)
         {
             throw new Exception("not implimetn exeption 14.11.20");
             // return await _db.TypeProduct.ToListAsync();

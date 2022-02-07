@@ -1,6 +1,7 @@
 *.temp.*   
 *.sln
 launchSettings.json
+docker-compose.yml
 MyConfig.json
 .vs/
 

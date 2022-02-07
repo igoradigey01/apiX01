@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using EmailService;
 
 
@@ -19,6 +20,7 @@ namespace ShopAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public IActionResult Post()
         {
             var message = new Message(new string[] { "agape962@mail.ru" }, "Test email", "This is the content from our email.", null);

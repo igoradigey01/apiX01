@@ -99,6 +99,7 @@ namespace ShopAPI
 
              // затем подключаем сервисы Identity
             services.AddIdentity<User,IdentityRole> ()
+                .AddRoles<IdentityRole>()                      //31.12.21
                     .AddEntityFrameworkStores<AppIdentityDbContext>()
                    .AddDefaultTokenProviders();
 

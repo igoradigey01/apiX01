@@ -9,14 +9,48 @@ using System.Threading.Tasks;
 
 namespace ShopAPI.Model
 {
-    //------------------------------------
+    //------------------------------------Magick.net croup img file----------------
+    // https://github.com/dlemstra/Magick.NET/blob/main/docs/ReadingImages.md
+
+    public struct SyfficsImg
+    {
+        private string _syffics;
+        private int _width;
+        private int _quality;
 
 
+        public SyfficsImg(string syffics, int width, int quality)
+        {
+            _syffics = syffics;
+            _width = width;
+            _quality = quality;
+
+        }
+        public string Syffics { get { return _syffics; } }
+        public int Width { get { return _width; } }
+        public int Quality { get { return _quality; } }
+        public string PngPreffic { get { return ".png"; } }
+        public string WebpPreffic { get { return ".webp"; } }
+        public int PngQuality { get { return 75; } }
+        public int PnwWidth { get { return 300; } }
+    }
+
+    public struct SyfficsForImg
+    {
+        public SyfficsImg Small { get { return new SyfficsImg("S", 200, 85); } }
+        public SyfficsImg Medium { get { return new SyfficsImg("M", 640, 85); } }
+        public SyfficsImg Lagre { get { return new SyfficsImg("L", 1080, 95); } }
+
+    }
     public class ImageRepository
     {
 
         private readonly string _imgDir;
         private readonly IWebHostEnvironment _hostingEnvironment;
+        private readonly SyfficsForImg _syfficsImg = new SyfficsForImg();
+
+
+
         // dir host img wwwroot/images
         private string GetImgPaht
         {
@@ -26,17 +60,27 @@ namespace ShopAPI.Model
                 return System.IO.Path.Combine(wwwroot, _imgDir);
             }
         }
-        // generete random guid name-------
-        public string GetImgRamdomName(string imgName)
+        // generete random guid name old vertion-------
+        public string GetImgRamdomName(string Imgextenion)
         {
 
-            var extenion = System.IO.Path.GetExtension(imgName);
+            // var extenion = System.IO.Path.GetExtension(imgName);
             var name = Guid.NewGuid().ToString();
             //  Console.WriteLine("Guid file name --" + name);
 
-            string fileName = System.IO.Path.Combine(name + extenion);
+            string fileName = System.IO.Path.Combine(name + Imgextenion);
             //Console.WriteLine("filePath --" + filePath);
             return fileName;
+        }
+
+        public string RamdomName
+        {
+            get
+            {
+                var name = Guid.NewGuid().ToString();
+
+                return name;
+            }
         }
 
         public byte[] GetImage(string name)
@@ -64,13 +108,18 @@ namespace ShopAPI.Model
         }
 
 
-        public ImageRepository(IConfiguration config, IWebHostEnvironment environment)
+        public ImageRepository(IWebHostEnvironment environment)
         {
-            _imgDir = config["ImagesDir"];
+            _imgDir = "images";
             _hostingEnvironment = environment;
 
         }
 
+        /// <summary>
+        /// OLD VERTION
+        /// </summary>
+        /// <param name="imgName"></param>
+        /// <param name="photo"></param>
         public void Save(string imgName, byte[] photo)
         {
 
@@ -88,6 +137,22 @@ namespace ShopAPI.Model
                 Console.WriteLine($"-----UploadImageRepository--Ошибка---(Add)--img Save--{imgPath}--");
                 Console.WriteLine(ex.Message);
             }
+        }
+
+        /// <summary>
+        /// NEW VERTION 05.02.22
+        /// CREATE S M L SIZE IMG webp and png
+        /// </summary>
+        /// <param name="imgName"></param>
+        /// <param name="fileStream"></param>
+
+        public void Save(string imgName, Stream fileStream)
+        {
+
+
+            ResizeAndSave(imgName, fileStream);
+
+
         }
         //---------------------------------------Convertor Base64 to Blob img
 
@@ -144,10 +209,12 @@ namespace ShopAPI.Model
             }
         }
         //-----------------------------
-        public byte[] Base64ImgConvertor(string PngBase64Img)
+        public byte[] Base64ImgConvertor(string webpBase64Img)
         {
-            string convert = PngBase64Img.Replace("data:image/png;base64,", String.Empty);
+            string convert = webpBase64Img.Replace("data:image/webp;base64,", String.Empty);
+
             byte[] imgBytes = null;
+
             try
             {
                 imgBytes = Convert.FromBase64String(convert);
@@ -160,6 +227,57 @@ namespace ShopAPI.Model
 
             return imgBytes;
 
+        }
+
+        private void ResizeAndSave(string name, Stream stream)
+        {
+
+            using (var image = new MagickImage(stream))
+            {
+                var pathLWebp = System.IO.Path.Combine(GetImgPaht, _syfficsImg.Lagre.Syffics + name + _syfficsImg.Lagre.WebpPreffic);
+                using (var img = image.Clone())
+                {
+                  
+
+                    img.Write(pathLWebp);
+
+                    var pathMWebp = System.IO.Path.Combine(GetImgPaht, _syfficsImg.Medium.Syffics + name + _syfficsImg.Medium.WebpPreffic);
+                    //image.Resize()
+                    
+                 
+                   // imgM.Format = MagickFormat.WebM;
+                    int heightM = image.Width / image.Height * _syfficsImg.Medium.Width;
+                    img.Resize(_syfficsImg.Medium.Width, heightM);
+                    img.Strip();
+                    img.Quality = _syfficsImg.Medium.Quality;
+
+                    img.Write(pathMWebp); 
+
+                    
+                    var pathSWebp = System.IO.Path.Combine(GetImgPaht, _syfficsImg.Small.Syffics + name + _syfficsImg.Small.WebpPreffic);
+                   // imgS.Format = MagickFormat.WebM;
+                    //image.Resize()
+                    var height = image.Width / image.Height * _syfficsImg.Small.Width;
+                    img.Resize(_syfficsImg.Small.Width, height);
+                    img.Strip();
+                    img.Quality = _syfficsImg.Medium.Quality;
+                    img.Write(pathSWebp);
+
+                }
+
+                  
+                    var pathMPng = System.IO.Path.Combine(GetImgPaht, _syfficsImg.Medium.Syffics + name + _syfficsImg.Medium.PngPreffic);
+                    // Sets the output format to png
+                    image.Format = MagickFormat.Png;
+                int heightPng = image.Width / image.Height * _syfficsImg.Medium.Width;
+                image.Resize(_syfficsImg.Medium.Width, heightPng);
+                image.Strip();
+                image.Quality = _syfficsImg.Medium.Quality;
+                image.Write(pathMPng);
+                
+
+               
+            }
         }
 
 
@@ -209,8 +327,7 @@ namespace ShopAPI.Model
 
             }
         }
-        //---------------------------------
-        // for --test---------------
+
         private void SaveBase64Img(string imgPath, string imgBase64String)
         {
             using (StreamWriter sw = File.CreateText(imgPath))
@@ -220,6 +337,31 @@ namespace ShopAPI.Model
             }
         }
         //-------------------------------------
-
+        /// <summary>
+        /// template for capasity email or ....
+        /// </summary>
+        /// <param name="capacity"></param>
+        private void CapacityImg(string capacity)
+        {
+            string InputImagePath = ""; // project.Variables["InputImagePath"].Value;
+            string SaveImagePath = ""; // project.Variables["SaveImagePath"].Value;
+            using (MagickImage image = new MagickImage(InputImagePath))
+            {
+                MagickReadSettings readSettings = new MagickReadSettings
+                {
+                    FillColor = MagickColors.Blue, // цвет текста
+                    BackgroundColor = MagickColors.Transparent, // фон текста
+                    Font = "Arial", // Шрифт текста (только те, что установлены в Windows)
+                    Width = 350, // Ширина текста
+                    Height = 500
+                }; // Высота текста
+                image.Alpha(AlphaOption.Opaque);
+                using (MagickImage label = new MagickImage("label:Тут какой то текст", readSettings))
+                {
+                    image.Composite(label, 200, 100, CompositeOperator.Over); // расположение текста на картинке 200 слева, 100 сверху
+                    image.Write(SaveImagePath);
+                }
+            }
+        }
     }
 }

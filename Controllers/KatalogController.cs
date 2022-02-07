@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 namespace ShopAPI.Controllers
 {
     [ApiController]
+    [Authorize(Roles = Role.Admin+","+ Role.Manager)]
+   // [Authorize(Roles = Role.Manager)]
     [Route("api/[controller]/[action]")]
     public class KatalogController : ControllerBase
     {
@@ -19,6 +21,7 @@ namespace ShopAPI.Controllers
 
         }
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IEnumerable<Katalog>> Get()
         {
             return await _repository.Get();
@@ -26,6 +29,7 @@ namespace ShopAPI.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IEnumerable<Product>> Products(int id)
         {
             return await _repository.Get(id);
@@ -34,7 +38,7 @@ namespace ShopAPI.Controllers
 
 
         // api/katalog (post) создать
-        [HttpPost]
+        [HttpPost]       
         public async Task<ActionResult<Katalog>> Post(Katalog item)
         {
             if (item == null)
@@ -54,7 +58,7 @@ namespace ShopAPI.Controllers
         }
 
         // PUT api/katalog/ (put) -изменить
-        [HttpPut]
+        [HttpPut]        
         public async Task<ActionResult> Put(Katalog item)
         {
 
@@ -77,7 +81,7 @@ namespace ShopAPI.Controllers
         }
 
         // DELETE api/katalog/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}")]       
         public async Task<ActionResult> Delete(int id)
         {
             var flagValid = await _repository.Delete(id);

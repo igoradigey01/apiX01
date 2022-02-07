@@ -1,4 +1,4 @@
-namespace ShopAPI.Model
+namespace ShopAPI.Models
 {    /// <summary>
      /// Create in AppIdentityDbContext on init
      /// </summary>
