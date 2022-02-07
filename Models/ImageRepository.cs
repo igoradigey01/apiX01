@@ -12,14 +12,14 @@ namespace ShopAPI.Model
     //------------------------------------Magick.net croup img file----------------
     // https://github.com/dlemstra/Magick.NET/blob/main/docs/ReadingImages.md
 
-    public struct SyfficsImg
+    public struct ImagesWebp
     {
         private string _syffics;
         private int _width;
         private int _quality;
 
 
-        public SyfficsImg(string syffics, int width, int quality)
+        public ImagesWebp(string syffics, int width, int quality)
         {
             _syffics = syffics;
             _width = width;
@@ -29,17 +29,21 @@ namespace ShopAPI.Model
         public string Syffics { get { return _syffics; } }
         public int Width { get { return _width; } }
         public int Quality { get { return _quality; } }
-        public string PngPreffic { get { return ".png"; } }
+
         public string WebpPreffic { get { return ".webp"; } }
+
+    }
+    /// <summary>
+    /// CONST FOM SAVE IMG AND SRC PICTURE 
+    /// </summary>
+    public struct ImagesConstFromPicture
+    {
+        public ImagesWebp Small { get { return new ImagesWebp("S", 200, 85); } }
+        public ImagesWebp Medium { get { return new ImagesWebp("M", 640, 85); } }
+        public ImagesWebp Lagre { get { return new ImagesWebp("L", 1080, 95); } }
+        public string PngPreffic { get { return ".png"; } }
         public int PngQuality { get { return 75; } }
         public int PnwWidth { get { return 300; } }
-    }
-
-    public struct SyfficsForImg
-    {
-        public SyfficsImg Small { get { return new SyfficsImg("S", 200, 85); } }
-        public SyfficsImg Medium { get { return new SyfficsImg("M", 640, 85); } }
-        public SyfficsImg Lagre { get { return new SyfficsImg("L", 1080, 95); } }
 
     }
     public class ImageRepository
@@ -47,7 +51,7 @@ namespace ShopAPI.Model
 
         private readonly string _imgDir;
         private readonly IWebHostEnvironment _hostingEnvironment;
-        private readonly SyfficsForImg _syfficsImg = new SyfficsForImg();
+        private readonly ImagesConstFromPicture _syfficsImg = new ImagesConstFromPicture();
 
 
 
@@ -145,7 +149,6 @@ namespace ShopAPI.Model
         /// </summary>
         /// <param name="imgName"></param>
         /// <param name="fileStream"></param>
-
         public void Save(string imgName, Stream fileStream)
         {
 
@@ -156,7 +159,11 @@ namespace ShopAPI.Model
         }
         //---------------------------------------Convertor Base64 to Blob img
 
-
+        /// <summary>
+        /// OLD VERTION
+        /// </summary>
+        /// <param name="imgName"></param>
+        /// <param name="photo"></param>
         public void Update(string imgName, byte[] photo)
         {
             var imgPath = System.IO.Path.Combine(GetImgPaht, imgName);
@@ -186,6 +193,16 @@ namespace ShopAPI.Model
                     Console.WriteLine(ex.Message);
                 }
             }
+        }
+
+        /// <summary>
+        /// NEW VERTION 07.02.22
+        /// </summary>
+        /// <param name="imgName"></param>
+        /// <param name="fileStream"></param>
+        public void Update(string imgName, Stream fileStream)
+        {
+            ResizeAndSave(imgName, fileStream);
         }
 
         //--------------------------
@@ -229,6 +246,11 @@ namespace ShopAPI.Model
 
         }
 
+        /// <summary>
+        /// NEW VERTION 07.02.22
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="stream"></param>
         private void ResizeAndSave(string name, Stream stream)
         {
 
@@ -237,25 +259,25 @@ namespace ShopAPI.Model
                 var pathLWebp = System.IO.Path.Combine(GetImgPaht, _syfficsImg.Lagre.Syffics + name + _syfficsImg.Lagre.WebpPreffic);
                 using (var img = image.Clone())
                 {
-                  
+
 
                     img.Write(pathLWebp);
 
                     var pathMWebp = System.IO.Path.Combine(GetImgPaht, _syfficsImg.Medium.Syffics + name + _syfficsImg.Medium.WebpPreffic);
                     //image.Resize()
-                    
-                 
-                   // imgM.Format = MagickFormat.WebM;
+
+
+                    // imgM.Format = MagickFormat.WebM;
                     int heightM = image.Width / image.Height * _syfficsImg.Medium.Width;
                     img.Resize(_syfficsImg.Medium.Width, heightM);
                     img.Strip();
                     img.Quality = _syfficsImg.Medium.Quality;
 
-                    img.Write(pathMWebp); 
+                    img.Write(pathMWebp);
 
-                    
+
                     var pathSWebp = System.IO.Path.Combine(GetImgPaht, _syfficsImg.Small.Syffics + name + _syfficsImg.Small.WebpPreffic);
-                   // imgS.Format = MagickFormat.WebM;
+                    // imgS.Format = MagickFormat.WebM;
                     //image.Resize()
                     var height = image.Width / image.Height * _syfficsImg.Small.Width;
                     img.Resize(_syfficsImg.Small.Width, height);
@@ -265,18 +287,18 @@ namespace ShopAPI.Model
 
                 }
 
-                  
-                    var pathMPng = System.IO.Path.Combine(GetImgPaht, _syfficsImg.Medium.Syffics + name + _syfficsImg.Medium.PngPreffic);
-                    // Sets the output format to png
-                    image.Format = MagickFormat.Png;
-                int heightPng = image.Width / image.Height * _syfficsImg.Medium.Width;
-                image.Resize(_syfficsImg.Medium.Width, heightPng);
-                image.Strip();
-                image.Quality = _syfficsImg.Medium.Quality;
-                image.Write(pathMPng);
-                
 
-               
+                var pathMPng = System.IO.Path.Combine(name + _syfficsImg.PngPreffic);
+                // Sets the output format to png
+                image.Format = MagickFormat.Png;
+                int heightPng = image.Width / image.Height * _syfficsImg.PnwWidth;
+                image.Resize(_syfficsImg.PnwWidth, heightPng);
+                image.Strip();
+                image.Quality = _syfficsImg.PngQuality;
+                image.Write(pathMPng);
+
+
+
             }
         }
 

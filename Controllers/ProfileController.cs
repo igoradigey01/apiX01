@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ShopAPI.Model;
-using ShopAPI.Models;
+
 using System;
 using System.Threading.Tasks;
 

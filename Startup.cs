@@ -9,7 +9,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Text;
 using ShopAPI.Model;
-using ShopAPI.Models;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Options;

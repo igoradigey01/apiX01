@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using ShopAPI.Models;
+using ShopAPI.Model;
 
 
 //https://code-maze.com/automapper-net-core/ 

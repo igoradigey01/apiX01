@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ShopAPI.Models
+namespace ShopAPI.Model
 {
     public class RegistrationResponseDto
     {

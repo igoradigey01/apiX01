@@ -1,4 +1,4 @@
-﻿namespace ShopAPI.Models
+﻿namespace ShopAPI.Model
 {
     public class ExternalAuthDto
     {

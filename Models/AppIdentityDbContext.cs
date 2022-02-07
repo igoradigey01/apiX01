@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using System;
 
-namespace ShopAPI.Models
+namespace ShopAPI.Model
 {
     public class AppIdentityDbContext : IdentityDbContext<User>
     {

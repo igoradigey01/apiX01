@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace ShopAPI.Models
+namespace ShopAPI.Model
 {
     public class UserForRegistrationDto
     {

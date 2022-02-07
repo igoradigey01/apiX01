@@ -1,7 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Identity;
 
-namespace ShopAPI.Models
+namespace ShopAPI.Model
 {
 
     public class User: IdentityUser{
