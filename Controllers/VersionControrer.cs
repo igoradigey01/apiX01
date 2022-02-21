@@ -9,7 +9,7 @@ namespace ShopAPI.Controllers
 {
     public class VetsionInfo
     {
-        public string V { get; set; }
+        public string Version { get; set; }
         public string Description { get; set; }
     }
 
@@ -18,8 +18,8 @@ namespace ShopAPI.Controllers
     public class VersionController : ControllerBase
     {
        
-        string _vertion=" v0.4.8-beta-(01.11.21)--debug  vertion-- aspnetcore -net5.0";
-        string _description="Create Identity net core model";
+        string _version="b2.2.22";
+        string _description= "Api shop- вторая редакция ( aspnetcore -net5.0)";
 
 
         public VersionController(){
@@ -32,28 +32,11 @@ namespace ShopAPI.Controllers
         [HttpGet]     
         public VetsionInfo Info()
         {
-            return  new VetsionInfo{V=_vertion,Description=_description}; // отправка в формате json  (-error parsing angular response)
+            return  new VetsionInfo{Version=_version,Description=_description}; // отправка в формате json  (-error parsing angular response)
 
         }
 
-        [HttpGet] 
-        [Authorize]       
-        public IActionResult Secret()
-        {
-            return  Ok("Secret"); // отправка в формате json  (-error parsing angular response)
-
-        }
-
-
-       
-            
-           
-
-
-
-            
-        
-
+         
 
     }
     

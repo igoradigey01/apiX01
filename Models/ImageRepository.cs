@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using ImageMagick;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 
 namespace ShopAPI.Model
@@ -206,10 +207,28 @@ namespace ShopAPI.Model
         }
 
         //--------------------------
-
+        /// <summary>
+        /// NEW VERTION 09.02.22
+        /// </summary>
+        /// <param name="imgName"></param>
         public void Delete(string imgName)
-        {
-            var imgPath = System.IO.Path.Combine(GetImgPaht, imgName);
+        {  
+            
+          
+
+            IEnumerable<string> imgList()
+            {
+                yield return _syfficsImg.Lagre.Syffics + imgName + ".webp";
+                yield return _syfficsImg.Medium.Syffics + imgName + ".webp"; // Can be executed
+                yield return _syfficsImg.Small.Syffics + imgName + ".webp";
+                yield return  imgName + _syfficsImg.PngPreffic;
+            }
+
+            foreach (var i in imgList())
+            {
+                
+            
+            var imgPath = System.IO.Path.Combine(GetImgPaht, i);
             FileInfo fileInf = new FileInfo(imgPath);
 
             try
@@ -223,6 +242,7 @@ namespace ShopAPI.Model
             {
                 Console.WriteLine($"---UploadImageRepository----Ошибка Delete file {imgPath}");
                 Console.WriteLine(ex.Message);
+            }
             }
         }
         //-----------------------------

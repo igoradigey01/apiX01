@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShopDb;
 using ShopAPI.Model;
 
 using Microsoft.AspNetCore.Authorization;
-using System.Threading.Tasks;
+
 namespace ShopAPI.Controllers
 {
     [ApiController]
@@ -40,12 +42,27 @@ namespace ShopAPI.Controllers
 
         // api/katalog (post) создать
         [HttpPost]       
-        public async Task<ActionResult<Katalog>> Post(Katalog item)
+        public async Task<ActionResult<Katalog>> Post()
         {
-            if (item == null)
+           
+
+            Katalog item = new Katalog();
+            IFormCollection form = await Request.ReadFormAsync();
+            if (form == null)
             {
-                return BadRequest("angular form data ==null");
+                return BadRequest("form data ==null");
             }
+
+            item.Id = int.Parse(form["id"]);
+           
+
+            item.Name = form["name"];
+            item.Name = item.Name.Trim();
+            item.Flag_href = bool.Parse(form["flag_href"]);
+            item.Flag_link = bool.Parse(form["flag_link"]);
+            item.Hidden = bool.Parse(form["hidden"]);
+            item.Link = form["link"];
+
             // Console.WriteLine("Task< ActionResult<Katalog>> Post(Katalog item)----"+item.Name +"-"+item.Id+"-"+item.Model);
             var flag = await _repository.Add(item);
             if (flag.Flag)
@@ -59,14 +76,32 @@ namespace ShopAPI.Controllers
         }
 
         // PUT api/katalog/ (put) -изменить
-        [HttpPut]        
-        public async Task<ActionResult> Put(Katalog item)
+        [HttpPut("{id}")] 
+        //[AllowAnonymous]
+        public async Task<ActionResult> Update(int id)
         {
 
-            if (item == null)
+            Katalog item = new Katalog();
+            IFormCollection form = await Request.ReadFormAsync();
+            if (form == null)
             {
-                return BadRequest();
+                return BadRequest("form data ==null");
             }
+
+            item.Id = int.Parse(form["id"]);
+            if (item.Id != id)
+            {
+                return BadRequest("Неверный Id");
+            }
+
+            item.Name = form["name"];
+            item.Name = item.Name.Trim();
+            item.Flag_href =bool.Parse( form["flag_href"]);
+            item.Flag_link = bool.Parse(form["flag_link"]);
+            item.Hidden = bool.Parse(form["hidden"]);
+            item.Link = form["link"];
+
+
             // if(id!=item.Id) return BadRequest();
             var flag = await _repository.Update(item);
             if (flag.Flag)

@@ -8,7 +8,7 @@ using ShopAPI.Model;
 using System;
 using System.Threading.Tasks;
 
-namespace X01Api.Controllers
+namespace ShopAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

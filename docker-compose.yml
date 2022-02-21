@@ -38,9 +38,7 @@ services:
        SmtpServer: smtp.mail.ru
        Port: 465
        Username: admin@x-01.ru
-       Password: Jwv3nXsTY84qZysFAnUu
-       
-         
+       Password: Jwv3nXsTY84qZysFAnUu         
     ports:
       - 80
     restart: always
@@ -54,7 +52,7 @@ services:
       - ./mysql:/usr/sbin/mysql
     environment:          
         MYSQL_ROOT_PASSWORD: 747Ii81FN3DL
-        MYSQL_DATABASE: AuthUserDB
+        MYSQL_DATABASE: ShopDB
     ports:
       - 3306:3306
          

@@ -4,10 +4,6 @@
     <Content Remove="wwwroot\images\ac162a0f-d5f5-41ac-876b-8c791abc950d.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="wwwroot\images\21903622-2c14-4b61-84c7-47d04ed04a74.png" />
-    <None Include="wwwroot\images\ac162a0f-d5f5-41ac-876b-8c791abc950d.png" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
     <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="8.3.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.10" />
