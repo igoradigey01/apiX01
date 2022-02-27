@@ -12,4 +12,4 @@ obj/
 published/
 # my Files
 *.temp.* 
-*.yml
+docker-compose.yml
