@@ -30,15 +30,15 @@ services:
        Audience: https://x-01.ru
        ClientSecrets: client_secret_swagger
        Scopes: api1.read
-       AdminPass: i-1967
-       AdminEmail: admin@x-01.ru
-       AdminPhone: +79002440328
-       ConnectString: server=db;port=3306;UserId=root;Password=747Ii81FN3DL;
+       AdminPass: i***
+       AdminEmail: admin@****
+       AdminPhone: +79002***
+       ConnectString: server=db;port=3306;UserId=***;Password=****;
        From: admin@x-01.ru
        SmtpServer: smtp.mail.ru
        Port: 465
-       Username: admin@x-01.ru
-       Password: Jwv3nXsTY84qZysFAnUu         
+       Username: admin@***1.ru
+       Password: ***      
     ports:
       - 80
     restart: always
@@ -51,7 +51,7 @@ services:
     volumes:
       - ./mysql:/usr/sbin/mysql
     environment:          
-        MYSQL_ROOT_PASSWORD: 747Ii81FN3DL
+        MYSQL_ROOT_PASSWORD: *****
         MYSQL_DATABASE: ShopDB
     ports:
       - 3306:3306
