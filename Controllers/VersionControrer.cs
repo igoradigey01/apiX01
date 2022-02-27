@@ -26,6 +26,11 @@ namespace ShopAPI.Controllers
          // _repository=repository;
 
         }
+
+        public void DockerCompose()
+        {
+            throw new NotImplementedException();
+        }
         
         
 
