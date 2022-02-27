@@ -29,6 +29,7 @@ namespace ShopAPI.Controllers
 
         public void DockerCompose()
         {
+            int i = 1;
             throw new NotImplementedException();
         }
         
