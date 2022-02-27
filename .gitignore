@@ -1,4 +1,4 @@
-*.temp.*   
+  
 *.sln
 launchSettings.json
 docker-compose.yml
@@ -10,3 +10,6 @@ mysql/
 nginx/
 obj/
 published/
+# my Files
+*.temp.* 
+*.yml
