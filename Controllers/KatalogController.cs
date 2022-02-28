@@ -62,6 +62,10 @@ namespace ShopAPI.Controllers
             item.Flag_link = bool.Parse(form["flag_link"]);
             item.Hidden = bool.Parse(form["hidden"]);
             item.Link = form["link"];
+          
+            item.DecriptSEO = form["decriptSEO"];
+            item.KeywordsSEO = form["keywordsSEO"];
+
 
             // Console.WriteLine("Task< ActionResult<Katalog>> Post(Katalog item)----"+item.Name +"-"+item.Id+"-"+item.Model);
             var flag = await _repository.Add(item);
@@ -100,6 +104,8 @@ namespace ShopAPI.Controllers
             item.Flag_link = bool.Parse(form["flag_link"]);
             item.Hidden = bool.Parse(form["hidden"]);
             item.Link = form["link"];
+            item.DecriptSEO = form["decriptSEO"];
+            item.KeywordsSEO = form["keywordsSEO"];
 
 
             // if(id!=item.Id) return BadRequest();

@@ -71,7 +71,14 @@ namespace ShopAPI.Model
                  
             }
        
-           selectItem.Name=item.Name.Trim();
+        selectItem.Name=item.Name.Trim();//23.02.22
+            selectItem.Flag_href = item.Flag_href;
+            selectItem.Flag_link = item.Flag_link;
+            selectItem.Hidden= item.Hidden;
+            selectItem.Link = item.Link;
+            selectItem.DecriptSEO = item.DecriptSEO;
+            selectItem.KeywordsSEO = item.KeywordsSEO;
+
                 
            _db.Katalogs.Update(selectItem);
         

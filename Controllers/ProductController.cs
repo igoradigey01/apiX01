@@ -49,9 +49,9 @@ namespace ShopAPI.Controllers
         [HttpPost("Create")]
         public async Task<ActionResult<Product>> Post()
         {
-          
+
             Product item = new Product();
-     
+
             IFormCollection form = await Request.ReadFormAsync();
 
             if (form == null)
@@ -62,17 +62,17 @@ namespace ShopAPI.Controllers
 
             // ModelSerialize itemSerialize=form as ModelSerialize; не работает
             item.Name = form["name"];
-            item.Name= item.Name.Trim();
+            item.Name = item.Name.Trim();
 
             string katalogName = form["katalogName"];
-            var kn=katalogName.Trim();
+            var kn = katalogName.Trim();
             if (!item.Name.StartsWith(kn))
             {
                 item.Name = kn + " " + item.Name;
             }
-            
 
-             if (!_repository.NameUnique(item.Name))
+
+            if (!_repository.NameUnique(item.Name))
             {
                 return BadRequest("Такое название  уже существует!");
             }
@@ -123,7 +123,7 @@ namespace ShopAPI.Controllers
         }
 
         // PUT api/katalog/5 (put) -изменить
-        [HttpPut("UpdateAll/{id}")]       
+        [HttpPut("UpdateAll/{id}")]
         public async Task<ActionResult<Product>> UpdateAll(int id)
         {
             //  throw new Exception("NOt Implimetn Exception");
@@ -133,13 +133,18 @@ namespace ShopAPI.Controllers
             {
                 return BadRequest("form data ==null");
             }
-          
+
             item.Id = int.Parse(form["id"]);
             if (item.Id != id)
             {
                 return BadRequest("Неверный Id");
             }
-       
+            IFormFile file = form.Files[0] as IFormFile;
+            if (file == null)
+            {
+                return BadRequest("form.Files[0] ==null");
+            }
+
             item.Name = form["name"];
             item.Name = item.Name.Trim();
 
@@ -158,29 +163,24 @@ namespace ShopAPI.Controllers
 
 
 
-            IFormFile file = form.Files[0] as IFormFile;
-            string? iname = form["imgName"];
-          
 
-            if (String.IsNullOrEmpty(iname)||String.Equals(iname,"null"))
+            string? iname = form["imgName"];
+
+
+            if (String.IsNullOrEmpty(iname) || String.Equals(iname, "null"))
             {
-                item.Image= _imageRepository.RamdomName;
+                item.Image = _imageRepository.RamdomName;
             }
             else
             {
                 item.Image = iname;
             }
-            if (file != null)
-            {
-               
 
-                _imageRepository.Save(item.Image, file.OpenReadStream());
 
-               
-            }
-           
 
-           
+            _imageRepository.Save(item.Image, file.OpenReadStream());
+
+
             var flag = await _repository.Update(item);
             if (flag.Flag)
             {
@@ -213,6 +213,7 @@ namespace ShopAPI.Controllers
             item.Name = item.Name.Trim();
 
             string katalogName = form["katalogName"];
+            //  добавить к имени название каталога
             var kn = katalogName.Trim();
             if (!item.Name.StartsWith(kn))
             {
@@ -224,9 +225,17 @@ namespace ShopAPI.Controllers
             item.Price = int.Parse(form["price"]);
             item.Markup = int.Parse(form["markup"]);
             item.Description = form["description"];
-          //  item.Image= form["imgName"]; !!!21.02.22
+            //  item.Image= form["imgName"]; !!!21.02.22
+            var nameImg = form["imgName"];
+            item.Image= nameImg;
 
-        
+            //  if(String.IsNullOrEmpty)
+            if (String.IsNullOrEmpty(nameImg) || String.Equals(nameImg, "null"))
+            {
+                return BadRequest(" Guid img Незадан");
+            }
+
+
             var flag = await _repository.Update(item);
             if (flag.Flag)
             {
@@ -243,9 +252,9 @@ namespace ShopAPI.Controllers
         public async Task<ActionResult<Product>> UpdateOnlyImg(string id)
         {
             //  throw new Exception("NOt Implimetn Exception");
-        
 
-           
+
+
 
             IFormCollection form = await Request.ReadFormAsync();
             if (form == null)
@@ -253,46 +262,42 @@ namespace ShopAPI.Controllers
                 return BadRequest("form data ==null");
             }
 
-           
+            IFormFile file = form.Files[0] as IFormFile;
+            if (file == null)
+            {
+                return BadRequest("form.Files[0] ==null");
+            }
+
+
 
             var nameImg = form["imgName"];
             if (nameImg != id)
             {
-                return BadRequest("Неверный imgName");
+                return BadRequest("Неверный Guid img ");
             }
 
             //  if(String.IsNullOrEmpty)
             if (String.IsNullOrEmpty(nameImg) || String.Equals(nameImg, "null"))
             {
-                return BadRequest("NameImg == null /Имя фото незадано ");
-            }
-          
-
-
-
-            var file = form.Files[0] as IFormFile;
-           
-            if (file != null || !String.IsNullOrEmpty(nameImg))
-            {
-
-
-                _imageRepository.Save(nameImg, file.OpenReadStream());
-
-                return Ok(); 
-
+                return BadRequest("Guid img Незадан ");
             }
 
-            return BadRequest("Фото с таким именем несуществует в репозитории или непередан blob obj");
 
-           
+
+            _imageRepository.Save(nameImg, file.OpenReadStream());
+
+            return Ok();
+
+
+
         }
 
         // DELETE api/katalog/5
-        [HttpDelete("Delete/{id}")]       
+        [HttpDelete("Delete/{id}")]
         public async Task<ActionResult> Delete(int id)
         {
             // throw new Exception("NOt Implimetn Exception");
-       //     return BadRequest("test delete bad");
+            //     return BadRequest("test delete bad");
             Product item = await _repository.Item(id);
             var item_loads_Images = await _repository.ItemLoadChild(item);
             List<string> images = item_loads_Images.Images.Select(i => i.Name).ToList<string>();

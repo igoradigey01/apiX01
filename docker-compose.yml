@@ -55,9 +55,3 @@ services:
         MYSQL_DATABASE: ShopDB
     ports:
       - 3306:3306
-         
-  
-           
-          
-
-       
