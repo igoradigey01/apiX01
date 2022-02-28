@@ -1,7 +1,6 @@
   
 *.sln
-launchSettings.json
-docker-compose.yml
+
 MyConfig.json
 .vs/
 
@@ -13,3 +12,5 @@ published/
 # my Files
 *.temp.* 
 docker-compose.yml
+launchSettings.json
+#docker-compose.yml

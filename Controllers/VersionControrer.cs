@@ -19,7 +19,7 @@ namespace ShopAPI.Controllers
     {
        
         string _version="b2.2.22";
-        string _description= "Api shop- вторая редакция ( aspnetcore -net5.0)(27.02.22)";
+        string _description= "Api shop- вторая редакция ( aspnetcore -net5.0)(28.02.22)";
 
 
         public VersionController(){
@@ -29,6 +29,7 @@ namespace ShopAPI.Controllers
 
         public void DockerCompose()
         {
+            int i = 1;
             throw new NotImplementedException();
         }
         

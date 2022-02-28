@@ -33,7 +33,7 @@ services:
        AdminPass: i-1967
        AdminEmail: admin@x-01.ru
        AdminPhone: +79002440328
-       ConnectString: server=db;port=3306;UserId=root;Password=747Ii81FN3DL;
+       ConnectString: server=db;port=3306;UserId=root;Password=747Ii81FN3DL-test;
        From: admin@x-01.ru
        SmtpServer: smtp.mail.ru
        Port: 465
@@ -51,7 +51,13 @@ services:
     volumes:
       - ./mysql:/usr/sbin/mysql
     environment:          
-        MYSQL_ROOT_PASSWORD: 747Ii81FN3DL
+        MYSQL_ROOT_PASSWORD: 747Ii81FN3DL-test
         MYSQL_DATABASE: ShopDB
     ports:
       - 3306:3306
+         
+  
+           
+          
+
+       
