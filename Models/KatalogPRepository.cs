@@ -8,13 +8,13 @@ using ShopDb;
 
 namespace ShopAPI.Model
 {
-    public class KatalogRepository
+    public class KatalogPRepository
     {
-        private readonly MyShopContext _db;
+        private readonly MyShopDbContext _db;
        
 
-        public KatalogRepository(
-            MyShopContext db
+        public KatalogPRepository(
+            MyShopDbContext db
             
             )
         {
@@ -22,11 +22,11 @@ namespace ShopAPI.Model
            
         }
 
-        public async Task< IEnumerable<Katalog>> Get()
+        public async Task< IEnumerable<KatalogP>> Get()
         {
              
           //  throw new Exception("not implimetn exeption 14.11.20");
-          return await _db.Katalogs.ToListAsync();
+          return await _db.KatalogPs.ToListAsync();
         }
 
         public async Task<IEnumerable<Product>> Get(int katalogId)
@@ -36,10 +36,10 @@ namespace ShopAPI.Model
 
         }
 
-        public async Task<RepositoryResponseDto > Add(Katalog item){             
-                RepositoryResponseDto  flag=new RepositoryResponseDto {Flag=false,Message=null};
+        public async Task<DtoRepositoryResponse > Add(KatalogP item){             
+                DtoRepositoryResponse  flag=new DtoRepositoryResponse {Flag=false,Message=null};
                // db.Users.Add(user);
-             await _db.Katalogs.AddAsync(item);  
+             await _db.KatalogPs.AddAsync(item);  
               int i=  await _db.SaveChangesAsync() ;
             
             //  Console.WriteLine("async Task<bool> Add(Katalog item)-----------"+i.ToString()+"_db.Entry.State--"+_db.Entry(item).State.ToString());
@@ -56,11 +56,11 @@ namespace ShopAPI.Model
               }
          }
 
-          public async Task< RepositoryResponseDto > Update(Katalog item){
+          public async Task< DtoRepositoryResponse > Update(KatalogP item){
              //  throw new Exception("NOt Implimetn Exception");
            //   Console.WriteLine("async Task<bool> Update(Katalog item)------_db.Kagalog.Any-----"+item.Id.ToString()+" "+item.Name);
-             RepositoryResponseDto   flag=new RepositoryResponseDto {Flag=false,Message=null,Item=null};
-             Katalog selectItem= await _db.Katalogs.FirstOrDefaultAsync(x=>x.Id==item.Id);
+             DtoRepositoryResponse   flag=new DtoRepositoryResponse {Flag=false,Message=null,Item=null};
+             KatalogP selectItem= await _db.KatalogPs.FirstOrDefaultAsync(x=>x.Id==item.Id);
             
              
                if (selectItem==null)
@@ -80,7 +80,7 @@ namespace ShopAPI.Model
             selectItem.KeywordsSEO = item.KeywordsSEO;
 
                 
-           _db.Katalogs.Update(selectItem);
+           _db.KatalogPs.Update(selectItem);
         
          int i=   await _db.SaveChangesAsync();
            if(i!=0){
@@ -98,17 +98,17 @@ namespace ShopAPI.Model
                
           }
 
-          public async Task< RepositoryResponseDto > Delete(int id){
-             RepositoryResponseDto  flagValid=new RepositoryResponseDto {Flag=false,Message=""};
+          public async Task< DtoRepositoryResponse > Delete(int id){
+             DtoRepositoryResponse  flagValid=new DtoRepositoryResponse {Flag=false,Message=""};
               
-                Katalog item = await _db.Katalogs.FirstOrDefaultAsync(x => x.Id == id);
+                KatalogP item = await _db.KatalogPs.FirstOrDefaultAsync(x => x.Id == id);
             if (item == null)
             {
               flagValid.Message="Каталога с таким id не существует!";
               flagValid.Flag=false;
                 return flagValid;
             }
-            _db.Katalogs.Remove(item);
+            _db.KatalogPs.Remove(item);
            int i= await _db.SaveChangesAsync();
            if(i!=0) {
              flagValid.Flag=true;

@@ -11,9 +11,9 @@ namespace ShopAPI.Model
     // смотри---ClassData.cs-- :ICRUD named- Iterfaise
     public class ProductRepository
     {
-        private readonly MyShopContext _db;
+        private readonly MyShopDbContext _db;
         // public     delegate void  Save(string imgPath,IFormFile photo);
-        public ProductRepository(MyShopContext db)
+        public ProductRepository(MyShopDbContext db)
         {
             _db = db;
         }
@@ -35,13 +35,13 @@ namespace ShopAPI.Model
         public async Task<Product> ItemLoadChild(Product item)
         {
             _db.Attach<Product>(item);
-            await _db.Entry<Product>(item).Collection<Image>(p => p.Images).LoadAsync();
+            await _db.Entry<Product>(item).Collection<ImageP>(p => p.Images).LoadAsync();
             return item;
         }
 
-        public async Task<RepositoryResponseDto > Create(Product item)
+        public async Task<DtoRepositoryResponse > Create(Product item)
         {
-            var flag = new RepositoryResponseDto  { Flag = false, Item = null, Message = "" };
+            var flag = new DtoRepositoryResponse  { Flag = false, Item = null, Message = "" };
             // db.Users.Add(user);
             if (item.KatalogId == -1)
             {
@@ -50,7 +50,7 @@ namespace ShopAPI.Model
 
                 return flag;
             }
-            if (item.TypeProductId == -1)
+            if (item.MaterialId == -1)
             {
                 flag.Message = "Ошибка БД TypeProductId==-1";
                 flag.Flag = false;
@@ -78,19 +78,19 @@ namespace ShopAPI.Model
 
         }
         //Обновляет значения в бд но не img (photo)
-        public async Task<RepositoryResponseDto > Update(Product item)
+        public async Task<DtoRepositoryResponse > Update(Product item)
         {
-            bool flag_edit = false;
+          //  bool flag_edit = false;
 
             Product selectItem = await _db.Products.FirstOrDefaultAsync(x => x.Id == item.Id);
 
             //   var flagValid=new FlagValid {Flag=false,ErrorMessage=""};
-            var flag = new RepositoryResponseDto  { Flag = false, Item = null, Message = "" };
+            var flag = new DtoRepositoryResponse  { Flag = false, Item = null, Message = "" };
 
 
             if (selectItem == null)
             {
-                return new RepositoryResponseDto  { Flag = false, Message = "Товар с таким id  в БД ненайден" };
+                return new DtoRepositoryResponse  { Flag = false, Message = "Товар с таким id  в БД ненайден" };
             }
             // проверка на уникльность
             if (item.KatalogId == -1)
@@ -100,46 +100,28 @@ namespace ShopAPI.Model
 
                 return flag;
             }
-            if (item.TypeProductId == -1)
+            if (item.MaterialId == -1)
             {
-                flag.Message = "Ошибка БД TypeProductId==-1";
+                flag.Message = "Ошибка БД MaterialId==-1";
+                flag.Flag = false;
+                return flag;
+            }
+            if (item.CategoriaId == -1)
+            {
+                flag.Message = "Ошибка БД CategoriaId==-1";
                 flag.Flag = false;
                 return flag;
             }
 
 
-            if (selectItem.KatalogId != item.KatalogId)
-            {
-                flag_edit = true;
-                selectItem.KatalogId = item.KatalogId;
-            }
-
-            if (selectItem.TypeProductId != item.TypeProductId)
-            {
-                flag_edit = true;
-                selectItem.TypeProductId = item.TypeProductId;
-            }
-
-            if (selectItem.Name != item.Name.Trim())
-            {
-                flag_edit = true;
-                selectItem.Name = item.Name.Trim();
-            }
-            if (selectItem.Description != item.Description)
-            {
-                flag_edit = true;
-                selectItem.Description = item.Description;
-            }
-            if (selectItem.Price != item.Price)
-            {
-                flag_edit = true;
-                selectItem.Price = item.Price;
-            }
-            if (selectItem.Markup != item.Markup)
-            {
-                flag_edit = true;
-                selectItem.Markup = item.Markup;
-            }
+           
+            selectItem.KatalogId = item.KatalogId;
+            selectItem.MaterialId = item.MaterialId;
+            selectItem.CategoriaId = item.CategoriaId;
+            selectItem.Name = item.Name;
+            selectItem.Description = item.Description;
+            selectItem.Price = item.Price;
+            selectItem.Markup = item.Markup;
             selectItem.Image = item.Image;
 
 
@@ -154,24 +136,17 @@ namespace ShopAPI.Model
                 //    _del.Invoke(selectItem.Image,photo);
                 return flag;
             }
-            if (!flag_edit)
-            {
-                flag.Message = "";
-                flag.Flag = true;
-                //    _del.Invoke(selectItem.Image,photo);
-                return flag;
-
-            }
+          
             flag.Flag = false;
             flag.Message = "Ошибка субд Update,запись в бд не создана!";
             return flag;
 
         }
 
-        public async Task<RepositoryResponseDto > Delete(Product item)
+        public async Task<DtoRepositoryResponse > Delete(Product item)
         {
 
-            RepositoryResponseDto  flag = new RepositoryResponseDto  { Flag = false, Message = null, Item = null };
+            DtoRepositoryResponse  flag = new DtoRepositoryResponse  { Flag = false, Message = null, Item = null };
             int i = 0;
 
 
@@ -208,7 +183,7 @@ namespace ShopAPI.Model
 
         }
 
-        public async Task<RepositoryResponseDto > DeleteChildImage(Image item)
+        public async Task<DtoRepositoryResponse > DeleteChildImage(ImageP item)
         {
             throw new Exception("NOt Implimetn Exception");
 

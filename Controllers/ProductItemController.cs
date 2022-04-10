@@ -32,7 +32,7 @@ namespace ShopAPI.Controllers
         // воозвращает path-фото колекция (детарльное фото[] Товара)
         //---  [Route("api/[controller]/[action]")]--
         [HttpGet("{idProduct}")]
-        public async Task<IEnumerable<Image>> GetImages(int idProcuct)
+        public async Task<IEnumerable<ImageP>> GetImages(int idProcuct)
         {
             // return "test-Get_TypeProductController";
             //  test_MySql();
@@ -50,10 +50,10 @@ namespace ShopAPI.Controllers
 
         // api/item-product (post) создать
         [HttpPost]
-        public async Task<ActionResult<Image>> CreateImage()
+        public async Task<ActionResult<ImageP>> CreateImage()
         {
 
-            Image item = new Image { Id = 0, Name = "", ProductId = -1 };
+            ImageP item = new ImageP { Id = 0, Name = "", ProductId = -1 };
             IFormCollection form = await Request.ReadFormAsync();
             if (form == null)
             {
@@ -120,7 +120,7 @@ namespace ShopAPI.Controllers
         }
        
          //    [HttpPut] -- не ипользуется толко добавляем или удаляем на клиенте
-        public async Task<ActionResult<Image>> UpdateImage(int idImage)
+        public async Task<ActionResult<ImageP>> UpdateImage(int idImage)
         {
            throw new Exception("NOt Implimetn Exception");
 
@@ -163,7 +163,7 @@ namespace ShopAPI.Controllers
         public async Task<ActionResult> Delete(int id)
         {
            // throw new Exception("NOt Implimetn Exception");
-           Image item = await _repository.GetItemImage(id);
+           ImageP item = await _repository.GetItemImage(id);
             if (item== null)
         {
             return BadRequest("Image not found in БД");

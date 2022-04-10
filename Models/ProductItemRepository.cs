@@ -12,45 +12,45 @@ namespace ShopAPI.Model
     public class ProductItemRepository
     {
 
-        private readonly MyShopContext _db;
-        public ProductItemRepository(MyShopContext db)
+        private readonly MyShopDbContext _db;
+        public ProductItemRepository(MyShopDbContext db)
         {
 
             _db = db;
         }
 
-        public async Task<IEnumerable<Image>> GetImags(int idProduct)
+        public async Task<IEnumerable<ImageP>> GetImags(int idProduct)
         {
             //  throw new Exception("NOt Implimetn Exception");
-            var img = _db.Images.Where(p => p.ProductId == idProduct);
+            var img = _db.ImagePs.Where(p => p.ProductId == idProduct);
            
 
             return await img.ToArrayAsync();
 
         }
 
-        public async Task<Image> GetItemImage(int idItem){
+        public async Task<ImageP> GetItemImage(int idItem){
               
              
 
-            return await _db.Images.Where(p=>p.Id==idItem).FirstOrDefaultAsync();
+            return await _db.ImagePs.Where(p=>p.Id==idItem).FirstOrDefaultAsync();
         }
 
         public async Task<Product> GetItemProducts(int id){
             return await _db.Products.Where(p=>p.Id==id).FirstOrDefaultAsync();
         }
                //-------------------------------------
-        public async Task<RepositoryResponseDto > UpdateImage(Image item){
+        public async Task<DtoRepositoryResponse > UpdateImage(ImageP item){
            
            throw new Exception("not implimetn exeption 14.11.20");
         }       
-        public async Task<RepositoryResponseDto > CreateImage(Image item)
+        public async Task<DtoRepositoryResponse > CreateImage(ImageP item)
         {
-            await _db.Images.AddAsync(item);
+            await _db.ImagePs.AddAsync(item);
             int i = await _db.SaveChangesAsync();
 
             //  Console.WriteLine("async Task<bool> Add(Katalog item)-----------"+i.ToString()+"_db.Entry.State--"+_db.Entry(item).State.ToString());
-            RepositoryResponseDto   flag=new RepositoryResponseDto {Flag=false,Message=null,Item=null};
+            DtoRepositoryResponse   flag=new DtoRepositoryResponse {Flag=false,Message=null,Item=null};
            if(i!=0){
               flag.Message="БД Images add ok!";
               flag.Flag=true;
@@ -65,15 +65,15 @@ namespace ShopAPI.Model
            }
         }
         
-        public async Task<RepositoryResponseDto > DeleteImage(Image item)
+        public async Task<DtoRepositoryResponse > DeleteImage(ImageP item)
         {
-               RepositoryResponseDto   flag=new RepositoryResponseDto {Flag=false,Message=null,Item=null};
+               DtoRepositoryResponse   flag=new DtoRepositoryResponse {Flag=false,Message=null,Item=null};
                int i=0;
 
                try{
            // Image item= await    _db.Images.Where(p=>p.Id==id).FirstOrDefaultAsync();
-           _db.Attach<Image>(item);
-           _db.Images.Remove(item);
+           _db.Attach<ImageP>(item);
+           _db.ImagePs.Remove(item);
               i=await  _db.SaveChangesAsync();
                }
               catch (Exception ex)

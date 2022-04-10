@@ -287,7 +287,7 @@ namespace ShopAPI.Controllers
                 Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("ClientSecrets"))
                 );
 
-            int LIFETIME = 60; // время жизни токена 
+            int LIFETIME = 240;//1; //60; // время жизни токена 
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var time = DateTime.UtcNow;

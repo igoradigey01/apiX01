@@ -44,11 +44,18 @@ namespace ShopAPI
         public void ConfigureServices(IServiceCollection services)
         {
             // services.AddTransient<AuthRepository>();
-            services.AddTransient<KatalogRepository>();
+            services.AddTransient<KatalogPRepository>();
             services.AddTransient<ProductRepository>();
             services.AddTransient<ImageRepository>();
-            services.AddTransient<TypeProductRepository>();
+            services.AddTransient<MaterialPRepository>();
             services.AddTransient<ProductItemRepository>();
+            services.AddTransient<CategoriaPRepository>();
+            services.AddTransient<ArticleNRepository>();
+            services.AddTransient<BrandNRepository>();
+            services.AddTransient<CategoriaNRepository>();
+            services.AddTransient<ColorNRepository>();
+            services.AddTransient<KatalogNRepository>();
+            services.AddTransient<NomenclatureRepository>();
             services.AddTransient<ITokenService, TokenService>();
 
             services.AddAutoMapper(typeof(Startup)); //18.11.21
@@ -87,7 +94,7 @@ namespace ShopAPI
             //  var serverVersion = new MySqlServerVersion(new Version(8, 0,21));
 
             // Replace 'YourDbContext' with the name of your own DbContext derived class.
-            services.AddDbContext<MyShopContext>(
+            services.AddDbContext<MyShopDbContext>(
                 options => options
                     .UseMySql(connectStringShop, new MySqlServerVersion(new Version(8, 0, 11)))
 

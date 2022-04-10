@@ -165,7 +165,7 @@ namespace ShopAPI.Model
         /// </summary>
         /// <param name="imgName"></param>
         /// <param name="photo"></param>
-        public void Update(string imgName, byte[] photo)
+       /* public void Update(string imgName, byte[] photo)
         {
             var imgPath = System.IO.Path.Combine(GetImgPaht, imgName);
             FileInfo fileInf = new FileInfo(imgPath);
@@ -194,7 +194,7 @@ namespace ShopAPI.Model
                     Console.WriteLine(ex.Message);
                 }
             }
-        }
+        }*/
 
         /// <summary>
         /// NEW VERTION 07.02.22
@@ -277,6 +277,7 @@ namespace ShopAPI.Model
             using (var image = new MagickImage(stream))
             {
                 var pathLWebp = System.IO.Path.Combine(GetImgPaht, _syfficsImg.Lagre.Syffics + name + _syfficsImg.Lagre.WebpPreffic);
+               
                 using (var img = image.Clone())
                 {
 
@@ -308,7 +309,7 @@ namespace ShopAPI.Model
                 }
 
 
-                var pathMPng = System.IO.Path.Combine(name + _syfficsImg.PngPreffic);
+                var pathMPng = System.IO.Path.Combine(GetImgPaht+ name + _syfficsImg.PngPreffic); //08.03.22
                 // Sets the output format to png
                 image.Format = MagickFormat.Png;
                 int heightPng = image.Width / image.Height * _syfficsImg.PnwWidth;

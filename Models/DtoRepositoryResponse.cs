@@ -1,7 +1,7 @@
 ﻿namespace ShopAPI.Model
 {
     // class передачи сообщений Validation между repository adn controllers
-    public class RepositoryResponseDto 
+    public class DtoRepositoryResponse 
     {
         public bool Flag { get; set; }
         public string Message { get; set; }
