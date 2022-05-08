@@ -20,7 +20,7 @@ scp -r C:\Users\Ks34\Documents\AngularProject\xf01\dist\xf01 root@46.---.---.---
 
 VPS
 
-//---- docker-отчет об использовании дискового пространства
+//---- docker-РѕС‚С‡РµС‚ РѕР± РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРё РґРёСЃРєРѕРІРѕРіРѕ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІР°
 docker system df
 docker volume ls
 docker volume prune
