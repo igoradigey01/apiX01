@@ -47,7 +47,7 @@ namespace ShopAPI.Controllers
 
         // api/product (post) создать
         [HttpPost("Create")]
-        public async Task<ActionResult<Product>> Post()
+        public async Task<ActionResult<Product>> Create()
         {
 
             Product item = new Product();

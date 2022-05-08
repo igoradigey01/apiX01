@@ -25,7 +25,8 @@ services:
     environment:
        ASPNETCORE_ENVIRONMENT: Development
        ASPNETCORE_URLS: http://+:80
-       FrontClient: http://localhost:4200
+       FrontClient1: http://localhost:4200
+       FrontClient2: http://localhost:8080
        Issuer: https://s.x-01.ru
        Audience: https://x-01.ru
        ClientSecrets: client_secret_swagger

@@ -69,8 +69,9 @@ namespace ShopAPI.Controllers
             item.Name = item.Name.Trim();
 
             item.Hidden = bool.Parse(form["hidden"]);
-            item.PostavchikId = int.Parse("postavchikId");
-           
+            
+            item.PostavchikId = int.Parse(form["postavchikId"]);
+
 
 
 
@@ -110,7 +111,7 @@ namespace ShopAPI.Controllers
 
             item.Name = form["name"];
             item.Name = item.Name.Trim();
-            item.PostavchikId = int.Parse("postavchikId");
+            item.PostavchikId = int.Parse(form["postavchikId"]);
 
             item.Hidden = bool.Parse(form["hidden"]);
           

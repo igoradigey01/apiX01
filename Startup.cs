@@ -20,10 +20,7 @@ using Microsoft.EntityFrameworkCore;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using EmailService;
-
-
-
-
+using System.Collections.Generic;
 
 namespace ShopAPI
 {
@@ -59,8 +56,8 @@ namespace ShopAPI
             services.AddTransient<ITokenService, TokenService>();
 
             services.AddAutoMapper(typeof(Startup)); //18.11.21
-            
-             int _potr = int.TryParse(Environment.GetEnvironmentVariable("Port"), out _potr) ? _potr : 465;
+
+            int _potr = int.TryParse(Environment.GetEnvironmentVariable("Port"), out _potr) ? _potr : 465;
             var emailConfig = new EmailConfiguration
             {
                 From = Environment.GetEnvironmentVariable("From"),
@@ -71,26 +68,28 @@ namespace ShopAPI
 
 
             };
-           
-            services.AddSingleton<IEmailSender> (new EmailSender( emailConfig)); //23.11.21
-         
+
+            services.AddSingleton<IEmailSender>(new EmailSender(emailConfig)); //23.11.21
+
 
 
             services.AddControllers();
 
             services.AddCors(
-                option => option.AddDefaultPolicy( builder => builder
-                   .WithOrigins( Environment.GetEnvironmentVariable("FrontClient"))
+                option => option.AddDefaultPolicy(builder => builder
+                   .WithOrigins(Environment.GetEnvironmentVariable("FrontClient1"),
+                                 Environment.GetEnvironmentVariable("FrontClient2")
+                               )
                    // .AllowAnyOrigin()
                    .AllowAnyHeader()
                    .AllowAnyMethod()
                   .AllowCredentials()
-                
+
                   ));
 
             //   var authConfig = Configuration.GetSection("Auth");
-            var connectStringShop = Environment.GetEnvironmentVariable("ConnectString")+"database=ShopDB;";
-            var connectStringAppIdentity= Environment.GetEnvironmentVariable("ConnectString")+"database=AppIdentityDB;";
+            var connectStringShop = Environment.GetEnvironmentVariable("ConnectString") + "database=ShopDB;";
+            var connectStringAppIdentity = Environment.GetEnvironmentVariable("ConnectString") + "database=AppIdentityDB;";
             //  var serverVersion = new MySqlServerVersion(new Version(8, 0,21));
 
             // Replace 'YourDbContext' with the name of your own DbContext derived class.
@@ -101,11 +100,11 @@ namespace ShopAPI
             );
 
             services.AddDbContext<AppIdentityDbContext>(
-                options=>options.UseMySql( connectStringAppIdentity, new MySqlServerVersion(new Version(8, 0, 11))
+                options => options.UseMySql(connectStringAppIdentity, new MySqlServerVersion(new Version(8, 0, 11))
             ));
 
-             // затем подключаем сервисы Identity
-            services.AddIdentity<User,IdentityRole> ()
+            // затем подключаем сервисы Identity
+            services.AddIdentity<User, IdentityRole>()
                 .AddRoles<IdentityRole>()                      //31.12.21
                     .AddEntityFrameworkStores<AppIdentityDbContext>()
                    .AddDefaultTokenProviders();
@@ -121,7 +120,7 @@ namespace ShopAPI
                     opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 }
                 )
-                    .AddJwtBearer(options =>
+                    .AddJwtBearer( options =>
                     {
                         options.RequireHttpsMetadata = false;
                         options.TokenValidationParameters = new TokenValidationParameters

@@ -9,10 +9,18 @@
         "environmentVariables": {
           "ASPNETCORE_ENVIRONMENT": "Development",
           "ASPNETCORE_URLS": "http://localhost:5010",
-          "FrontClient": "http://localhost:4200",
+          "FrontClient1": "http://localhost:4200",
+          "FrontClient2": "http://localhost:8080",
+
+
+
           "ClientSecrets": "client_secret_swagger",
           "Issuer": "http://localhost:5010",
           "Audience": "http://localhost:4200",
+        
+
+
+
           "Scopes": "api1.read",
           "AdminPass": "i-1965",
           "AdminEmail": "sh23@x-01.ru",

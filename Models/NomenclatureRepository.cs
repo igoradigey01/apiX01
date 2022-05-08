@@ -15,16 +15,22 @@ namespace ShopAPI.Model
             _db = db;
         }
 
-        public async Task<IEnumerable<Nomenclature>> Get()
+       /* public async Task<IEnumerable<Nomenclature>> Get()
         {
             //  throw new Exception("not implimetn exeption 14.11.20");
             return await _db.Nomenclatures.ToListAsync();
-        }
+        }*/
 
         public async Task<IEnumerable<Nomenclature>> GetNomenclatures(int idPostavchik)
         {
             //  throw new Exception("not implimetn exeption 14.11.20");
             return await _db.Nomenclatures.Where(n=>n.PostavchikId==idPostavchik).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Nomenclature>> GetNomenclatures(int idKatalog, int idPostavchik)
+        {
+            //  throw new Exception("not implimetn exeption 14.11.20");
+            return await _db.Nomenclatures.Where(n => n.PostavchikId == idPostavchik&&n.KatalogId==idKatalog).ToListAsync();
         }
 
         public async Task<Nomenclature> Item(int idNomenclature)
@@ -70,7 +76,10 @@ namespace ShopAPI.Model
             }
             selectItem.Name = item.Name.Trim();//23.02.22
           
-            selectItem.Hidden = item.Hidden;
+            selectItem.Hidden = item.Hidden;           
+            selectItem.InStock=  item.InStock ;
+            selectItem.Sale= item.Sale;
+
             selectItem.Description = item.Description;
             selectItem.Price = item.Price;
             selectItem.Markup= item.Markup;
@@ -103,6 +112,48 @@ namespace ShopAPI.Model
 
 
 
+        }
+
+        public async Task<DtoRepositoryResponse> UpdateDataPrice(ShopAPI.Controllers.PriceN[] items)
+        {
+            DtoRepositoryResponse flag = new DtoRepositoryResponse { Flag = false, Message = null, Item = null };
+         // Nomenclature[] nomenclatures; 
+            foreach(var item in items) { 
+            Nomenclature selectItem = await _db.Nomenclatures.FirstOrDefaultAsync(c => c.Id == item.Id);
+            if (selectItem == null)
+            {
+
+                flag.Message = "Товар с таким id  в БД ненайден";
+                return flag;
+
+            }
+              selectItem.Price = item.Price;
+
+                _db.Nomenclatures.Update(selectItem);
+
+                int i = await _db.SaveChangesAsync();
+
+                if (i != 0)
+                {
+
+                    flag.Message = "БД update ok!";
+                    flag.Flag = true;
+                    flag.Item = null;
+                    return flag;
+                }
+                else
+                {
+                    flag.Message = "Error!! Прайс обновлен не полностью!!";
+                    flag.Flag = false;
+                    flag.Item = selectItem;
+                    return flag;
+                }
+            }
+            flag.Message = "БД update false - что-то пошло не так!";
+            flag.Flag = false;
+            flag.Item = null;
+
+            return flag;
         }
 
         public async Task<DtoRepositoryResponse> Delete(int id)

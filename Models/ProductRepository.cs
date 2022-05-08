@@ -52,10 +52,19 @@ namespace ShopAPI.Model
             }
             if (item.MaterialId == -1)
             {
-                flag.Message = "Ошибка БД TypeProductId==-1";
+                flag.Message = "Ошибка БД MaterialId==-1";
                 flag.Flag = false;
                 return flag;
             }
+
+
+            if (item.CategoriaId == -1)
+            {
+                flag.Message = "Ошибка БД CategoriaId==-1";
+                flag.Flag = false;
+                return flag;
+            }
+
             // Проверить на уникольность ???
 
             await _db.Products.AddAsync(item);

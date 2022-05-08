@@ -68,7 +68,7 @@ namespace X01Api.Controllers
             item.Name = item.Name.Trim();
 
             item.Hidden = bool.Parse(form["hidden"]);
-            item.PostavchikId = int.Parse("postavchikId");
+            item.PostavchikId = int.Parse(form["postavchikId"]);
             item.DecriptSEO = form["decriptSEO"];
             
 
@@ -112,7 +112,7 @@ namespace X01Api.Controllers
             item.Name = item.Name.Trim();
 
             item.Hidden = bool.Parse(form["hidden"]);
-            item.PostavchikId = int.Parse("postavchikId");
+            item.PostavchikId = int.Parse(form["postavchikId"]);
             item.DecriptSEO = form["decriptSEO"];
 
 

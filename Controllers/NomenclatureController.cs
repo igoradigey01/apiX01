@@ -6,10 +6,20 @@ using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using ShopDb;
 using System;
+using System.IO;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ShopAPI.Controllers
 {
-   
+    public class PriceN
+    {
+        [JsonPropertyName("id")]
+        public int Id { get; set; }
+        [JsonPropertyName("price")]
+        public int Price { get; set; }
+    }
+
     [ApiController]
     [Authorize(Roles = Role.Admin + "," + Role.Furniture)]
     [Route("api/[controller]/[action]")]
@@ -28,20 +38,20 @@ namespace ShopAPI.Controllers
             _imageRepository = imageRepository;
         }
 
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IEnumerable<Nomenclature>> Get()
-        {
-            // int i = 0;
-            return await _repository.Get();
-        }
-
         [HttpGet("{idPostavchik}")]
-        [AllowAnonymous]
-        public async Task<IEnumerable<Nomenclature>> GetNomenclaturePs(int idPostavchik)
+        [AllowAnonymous]  /**pastavchik get Nomenclature */
+        public async Task<IEnumerable<Nomenclature>> NomenclaturePs(int idPostavchik)
         {
             // int i = 0;
             return await _repository.GetNomenclatures(idPostavchik);
+        }
+
+        [HttpGet("{idKatalog}")]
+        [AllowAnonymous]     /**Postavchik + Katalog get Nomenclature*/
+        public async Task<IEnumerable<Nomenclature>> NomenclaturePKs(int idKatalog, [FromQuery] int postavchikId)
+        {
+            // int i = 0;
+            return await _repository.GetNomenclatures(idKatalog, postavchikId);
         }
 
         [HttpGet]
@@ -57,7 +67,7 @@ namespace ShopAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Nomenclature>> Create()
         {
-           // throw new NotImplementedException();
+            // throw new NotImplementedException();
 
             Nomenclature item = new Nomenclature();
             IFormCollection form = await Request.ReadFormAsync();
@@ -67,30 +77,36 @@ namespace ShopAPI.Controllers
             }
 
             item.Id = int.Parse(form["id"]);
+            if (item.Id == -1)
+            {
+                item.Id = 0;
+            }
 
 
             item.Name = form["name"];
             item.Name = item.Name.Trim();
 
             item.Hidden = bool.Parse(form["hidden"]);
-          
+            item.InStock = bool.Parse(form["inStock"]);
+            item.Sale = bool.Parse(form["sale"]);
+
             item.Price = int.Parse(form["price"]);
             item.Markup = int.Parse(form["markup"]);
             item.Description = form["description"];
-            item.Position=int.Parse(form["position"]);
-           // item.Guid = Guid.NewGuid().ToString();
-            item.ArticleId= int.Parse(form["articleId"]);
+            item.Position = int.Parse(form["position"]);
+            // item.Guid = Guid.NewGuid().ToString();
+            item.ArticleId = int.Parse(form["articleId"]);
             item.BrandId = int.Parse(form["brandId"]);
             item.KatalogId = int.Parse(form["katalogId"]);
-            item.ColorId= int.Parse(form["colorId"]);
-            item.PostavchikId = int.Parse("postavchikId");
+            item.ColorId = int.Parse(form["colorId"]);
+            item.PostavchikId = int.Parse(form["postavchikId"]);
 
             // throw  new Exception("not implict ");//14.03.22
 
             if (form.Files.Count > 0)
             {
                 var file = form.Files[0] as IFormFile;
-               if (file != null) return BadRequest("form.Files[0] == null"); ;
+                if (file == null) return BadRequest("form.Files[0] == null"); ;
                 var imgName = _imageRepository.RamdomName;
 
                 _imageRepository.Save(imgName, file.OpenReadStream());
@@ -124,7 +140,7 @@ namespace ShopAPI.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateAll(int id)
         {
-         //   throw new NotImplementedException();
+            //   throw new NotImplementedException();
             Nomenclature item = new Nomenclature();
             IFormCollection form = await Request.ReadFormAsync();
             if (form == null)
@@ -142,6 +158,8 @@ namespace ShopAPI.Controllers
             item.Name = item.Name.Trim();
 
             item.Hidden = bool.Parse(form["hidden"]);
+            item.InStock = bool.Parse(form["inStock"]);
+            item.Sale = bool.Parse(form["sale"]);
             item.Price = int.Parse(form["price"]);
             item.Markup = int.Parse(form["markup"]);
             item.Description = form["description"];
@@ -151,10 +169,10 @@ namespace ShopAPI.Controllers
             item.BrandId = int.Parse(form["brandId"]);
             item.KatalogId = int.Parse(form["katalogId"]);
             item.ColorId = int.Parse(form["colorId"]);
-            item.PostavchikId = int.Parse("postavchikId");
+            item.PostavchikId = int.Parse(form["postavchikId"]);
 
 
-            
+
             var flagGuid = Guid.TryParse(item.Guid, out var i);
 
             if (!flagGuid)
@@ -172,7 +190,7 @@ namespace ShopAPI.Controllers
             }
             else
             {
-                item.Guid = "not_found";
+                item.Guid = "00000000-0000-0000-0000-000000000000";
 
             }
             // if(id!=item.Id) return BadRequest();
@@ -189,7 +207,39 @@ namespace ShopAPI.Controllers
             return BadRequest(flag.Message);
         }
 
-        [HttpPut("UpdateIgnoreImg/{id}")]
+        [HttpPut]
+        
+        public async Task<ActionResult> UpdateDataPrice()
+        {
+            //  Request.Body.
+            //var items = await Request.ReadFromJsonAsync<PriceN[]>();
+            //   var person = await request.ReadFromJsonAsync<Person>();
+
+            string body = "";
+            using (StreamReader stream = new StreamReader(Request.Body))
+            {
+                 body = await stream.ReadToEndAsync();
+
+               
+            }
+               
+
+                var items = JsonSerializer.Deserialize<PriceN[]>(body);
+            if (items == null)
+            {
+                return BadRequest("form data ==null");
+            }
+            if (items.Length > 0) {
+                var flag = await  _repository.UpdateDataPrice(items);
+                if(flag.Flag) return Ok(items);
+                else return BadRequest(flag.Message);
+            }
+            
+            return BadRequest();
+
+        }
+
+        [HttpPut("{id}")]
         public async Task<ActionResult<Nomenclature>> UpdateIgnoreImg(int id)
         {
            // throw new NotImplementedException();
@@ -207,26 +257,26 @@ namespace ShopAPI.Controllers
             }
 
             item.Name = form["name"];
-            item.Name = item.Name.Trim();
+            item.Name = item.Name;
 
-         /*   string katalogName = form["katalogName"];
-            //  добавить к имени название каталога
-            var kn = katalogName.Trim();
-            if (!item.Name.StartsWith(kn))
-            {
-                item.Name = kn + " " + item.Name;
-            }*/
 
+
+            item.ArticleId = int.Parse(form["articleId"]);
+            item.BrandId = int.Parse(form["brandId"]);
             item.KatalogId = int.Parse(form["katalogId"]);
+            item.ColorId = int.Parse(form["colorId"]);
             item.PostavchikId = int.Parse(form["postavchikId"]);
             item.ColorId = int.Parse(form["colorId"]);
+            item.Hidden = bool.Parse(form["hidden"]);
+            item.InStock = bool.Parse(form["inStock"]);
+            item.Sale = bool.Parse(form["sale"]);
             item.Price = int.Parse(form["price"]);
             item.Markup = int.Parse(form["markup"]);
             item.Description = form["description"];
             //  item.Image= form["imgName"]; !!!21.02.22
             item.Guid = form["guid"];
             var flagGuid = Guid.TryParse(item.Guid, out var i);
-            if (flagGuid)
+            if (!flagGuid)
             {
                 return BadRequest(" Guid img Незадан");
             }
@@ -244,7 +294,7 @@ namespace ShopAPI.Controllers
 
         }
 
-        [HttpPut("UpdateOnlyImg/{id}")]
+        [HttpPut("{id}")]
         public async Task<ActionResult<Product>> UpdateOnlyImg(string id)
         {
           
@@ -275,15 +325,17 @@ namespace ShopAPI.Controllers
             {
                 var file = form.Files[0] as IFormFile;
                 //   var imgName = _imageRepository.RamdomName;
-                if (file != null) return BadRequest("form.Files[0] == null"); ;
-                _imageRepository.Save(nameImg, file.OpenReadStream());
+                if (file != null)
+                {
+                    _imageRepository.Save(nameImg, file.OpenReadStream());
 
-                return Ok();
+                    return Ok();
+                }
             }
 
 
 
-            return BadRequest("error -- form.Files[0] ");
+            return BadRequest("form.Files[0] == null"); 
 
 
 
