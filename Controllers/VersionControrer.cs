@@ -19,7 +19,7 @@ namespace ShopAPI.Controllers
     {
        
         string _version="b2.5.22";
-        string _description= "Api shop- вторая редакция ( aspnetcore -net5.0)(03.05.22)";
+        string _description= "Api shop- вторая редакция ( aspnetcore -net5.0)(21.05.22)";
 
 
         public VersionController(){

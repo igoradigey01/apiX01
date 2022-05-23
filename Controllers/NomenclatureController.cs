@@ -54,7 +54,7 @@ namespace ShopAPI.Controllers
             return await _repository.GetNomenclatures(idKatalog, postavchikId);
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<Nomenclature> Item(int id)
         {
