@@ -62,7 +62,7 @@ namespace ShopAPI.Controllers
             }
 
             item.Id = int.Parse(form["id"]);
-            item.PostavchikId = int.Parse("postavchikId");
+            item.PostavchikId = int.Parse(form["postavchikId"]);
 
             item.Name = form["name"];
             item.Name = item.Name.Trim();
@@ -105,7 +105,7 @@ namespace ShopAPI.Controllers
             {
                 return BadRequest("Неверный Id");
             }
-            item.PostavchikId = int.Parse("postavchikId");
+            item.PostavchikId = int.Parse(form["postavchikId"]);
             item.Name = form["name"];
             item.Name = item.Name.Trim();
 

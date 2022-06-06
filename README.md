@@ -12,7 +12,9 @@ dotnet build <br/>
 dotnet publish -c release -o published <br/>
 -- remove shopapi_web old image in image---- <br/>
 docker-compose up  //create shopapi_web image   in images <br/>
--- push image shopapi_web on dockerHub --- <br/>
+//-- push image shopapi_web on dockerHub --- <br/>
+ docker pull igoradigey01/shopapi_web <br/>
+ docker-compose up -d <br/>
 docker-compose down <br/>
 # VPS 
 //------ work  on host provider VPS -------- <br/>
