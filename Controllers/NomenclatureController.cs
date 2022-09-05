@@ -50,7 +50,7 @@ namespace ShopAPI.Controllers
         [AllowAnonymous]     /**Postavchik + Katalog get Nomenclature*/
         public async Task<IEnumerable<Nomenclature>> NomenclaturePKs(int idKatalog, [FromQuery] int postavchikId)
         {
-            // int i = 0;
+            // int i = 0; 
             return await _repository.GetNomenclatures(idKatalog, postavchikId);
         }
 

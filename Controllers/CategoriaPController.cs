@@ -35,7 +35,7 @@ namespace ShopAPI.Controllers
             return await _repository.Get();
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<CategoriaP> Item(int id)
         {

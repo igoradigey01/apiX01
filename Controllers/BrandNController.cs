@@ -40,7 +40,7 @@ namespace ShopAPI.Controllers
         }
 
 
-        [HttpGet]
+        [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<BrandN> Item(int id)
         {

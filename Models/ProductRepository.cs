@@ -131,7 +131,7 @@ namespace ShopAPI.Model
             selectItem.Description = item.Description;
             selectItem.Price = item.Price;
             selectItem.Markup = item.Markup;
-            selectItem.Image = item.Image;
+            selectItem.ImageGuid = item.ImageGuid;
 
 
             // _db.Product.Update(selectItem);

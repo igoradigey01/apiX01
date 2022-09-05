@@ -96,15 +96,15 @@ namespace ShopAPI.Controllers
             if (form.Files.Count>0)
             {
                 var file = form.Files[0] as IFormFile;
-                var imgName = _imageRepository.RamdomName;
+                var imgGuid = _imageRepository.RamdomName;
 
-                _imageRepository.Save(imgName, file.OpenReadStream());
+                _imageRepository.Save(imgGuid, file.OpenReadStream());
 
-                item.Image = imgName;
+                item.ImageGuid = imgGuid;
             }
             else
             {
-                item.Image = "not_found";
+                item.ImageGuid = "not_found";
 
             }
 
@@ -167,42 +167,32 @@ namespace ShopAPI.Controllers
 
 
 
-            string iname = form["imgName"];
+            var guid = form["guid"];
 
-            //if (String.IsNullOrEmpty(iname) || String.Equals(iname, "null"))
-            //{
-            //    item.Image = _imageRepository.RamdomName;
-            //}
-            //else
-            //{
-            //    item.Image = iname;
-            //}
-
-            var flagGuid = Guid.TryParse(iname, out var i);
+            var flagGuid = Guid.TryParse(guid, out var i);
             if (!flagGuid)
             {
-                item.Image = _imageRepository.RamdomName;
-            }
-            else
-            {
-                item.Image = iname;
+                return BadRequest(" Guid img Незадан");
             }
 
+            item.ImageGuid = guid;
 
 
-           
+
+
+
             if (form.Files.Count > 0)
             {
                 var file = form.Files[0] as IFormFile;
              //   var imgName = _imageRepository.RamdomName;
 
-                _imageRepository.Save(iname, file.OpenReadStream());
+                _imageRepository.Save(item.ImageGuid, file.OpenReadStream());
 
               
             }
             else
             {
-                item.Image = "not_found";
+                item.ImageGuid = "00000000-0000-0000-0000-000000000000"; //"not_found";
 
             }
 
@@ -256,22 +246,20 @@ namespace ShopAPI.Controllers
             item.Markup = int.Parse(form["markup"]);
             item.Description = form["description"];
             //  item.Image= form["imgName"]; !!!21.02.22
-            var nameImg = form["imgName"];
-            item.Image= nameImg;
 
-            //  if(String.IsNullOrEmpty)
-            //if (String.IsNullOrEmpty(nameImg) || String.Equals(nameImg, "null"))
-            //{
-            //    return BadRequest(" Guid img Незадан");
-            //}
+            var guid = form["guid"];
 
-            string iname = form["imgName"];
-
-            var flagGuid = Guid.TryParse(iname, out var i);
+            var flagGuid = Guid.TryParse(guid, out var i);
             if (!flagGuid)
             {
                 return BadRequest(" Guid img Незадан");
             }
+            
+            item.ImageGuid= guid;
+
+         
+
+            
 
 
             var flag = await _repository.Update(item);
@@ -349,7 +337,7 @@ namespace ShopAPI.Controllers
             Product item = await _repository.Item(id);
             var item_loads_Images = await _repository.ItemLoadChild(item);
             List<string> images = item_loads_Images.Images.Select(i => i.Name).ToList<string>();
-            images.Add(item.Image);
+            images.Add(item.ImageGuid);
             DtoRepositoryResponse flag = await _repository.Delete(item_loads_Images);
 
             if (!flag.Flag)

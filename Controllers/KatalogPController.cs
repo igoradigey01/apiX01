@@ -31,7 +31,7 @@ namespace ShopAPI.Controllers
             //  throw new Exception("NOt Implimetn Exception");
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<IEnumerable<Product>> Products(int id)
         {

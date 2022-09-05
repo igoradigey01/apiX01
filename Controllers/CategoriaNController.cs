@@ -39,7 +39,7 @@ namespace X01Api.Controllers
             return await _repository.GetPostavchik(id);
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<CategoriaN> Item(int id)
         {

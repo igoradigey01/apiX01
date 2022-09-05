@@ -40,7 +40,7 @@ namespace ShopAPI.Controllers
             return await _repository.GetPostavchik(id);
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<ArticleN> Item(int id)
         {

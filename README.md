@@ -30,3 +30,12 @@ docker volume prune <br/>
 ng build <br/>
 scp -r C:\Users\Ks34\Documents\AngularProject\xf01\dist\xf01 root@46.---.---.---:~/myapp/nginx/data <br/>
 
+# EF создать модель классов из субд mysql----------------
+ сначало устновить зависимости см   <br/>
+ 
+  -- https://www.nuget.org/packages/Pomelo.EntityFrameworkCore.MySql/3.2.4  <br/>
+  
+  --  https://github.com/PomeloFoundation/Pomelo.EntityFrameworkCore.MySql  <br/>
+
+dotnet ef dbcontext scaffold "server=localhost;port=3306;user=root;password=12345;database=MyShop"  Pomelo.EntityFrameworkCore.MySql -o Models <br/>
+dotnet ef dbcontext scaffold "Server=localhost;Database=ef;User=root;Password=123456;TreatTinyAsBoolean=true;" "Pomelo.EntityFrameworkCore.MySql" <br/>
