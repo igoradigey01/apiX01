@@ -47,7 +47,7 @@ namespace ShopAPI.Controllers
 
 
         [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromBody]LoginInputModelDto login) //[FromBody] LoginInputModel login
+        public async Task<IActionResult> Login([FromBody] LoginInputModelDto login) //[FromBody] LoginInputModel login
         {
 
             Console.WriteLine("PassLogInAsync ----", login.Email);
@@ -102,41 +102,41 @@ namespace ShopAPI.Controllers
         public async Task<IActionResult> ExternalLogin([FromBody] ExternalAuthDto externalAuth)
         {
             throw new Exception("not implimetn exeption 30.11.21");
-            
-           /* var payload = await _jwtHandler.VerifyGoogleToken(externalAuth);
-            if (payload == null)
-                return BadRequest("Invalid External Authentication.");
 
-            var info = new UserLoginInfo(externalAuth.Provider, payload.Subject, externalAuth.Provider);
+            /* var payload = await _jwtHandler.VerifyGoogleToken(externalAuth);
+             if (payload == null)
+                 return BadRequest("Invalid External Authentication.");
 
-            var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
-            if (user == null)
-            {
-                user = await _userManager.FindByEmailAsync(payload.Email);
+             var info = new UserLoginInfo(externalAuth.Provider, payload.Subject, externalAuth.Provider);
 
-                if (user == null)
-                {
-                    user = new User { Email = payload.Email, UserName = payload.Email };
-                    await _userManager.CreateAsync(user);
+             var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+             if (user == null)
+             {
+                 user = await _userManager.FindByEmailAsync(payload.Email);
 
-                    //prepare and send an email for the email confirmation
+                 if (user == null)
+                 {
+                     user = new User { Email = payload.Email, UserName = payload.Email };
+                     await _userManager.CreateAsync(user);
 
-                    await _userManager.AddToRoleAsync(user, "Viewer");
-                    await _userManager.AddLoginAsync(user, info);
-                }
-                else
-                {
-                    await _userManager.AddLoginAsync(user, info);
-                }
-            }
+                     //prepare and send an email for the email confirmation
 
-            if (user == null)
-                return BadRequest("Invalid External Authentication.");
+                     await _userManager.AddToRoleAsync(user, "Viewer");
+                     await _userManager.AddLoginAsync(user, info);
+                 }
+                 else
+                 {
+                     await _userManager.AddLoginAsync(user, info);
+                 }
+             }
 
-            //check for the Locked out account
+             if (user == null)
+                 return BadRequest("Invalid External Authentication.");
 
-            var token = await _jwtHandler.GenerateToken(user);
-            return Ok(new AuthResponseDto { Token = token, IsAuthSuccessful = true });*/
+             //check for the Locked out account
+
+             var token = await _jwtHandler.GenerateToken(user);
+             return Ok(new AuthResponseDto { Token = token, IsAuthSuccessful = true });*/
         }
 
         //[Route("Register")]
@@ -173,13 +173,13 @@ namespace ShopAPI.Controllers
             }
             catch
             {
-                
-                 await _userManager.DeleteAsync(user);
+
+                await _userManager.DeleteAsync(user);
 
                 return BadRequest("Токен подтверждения электронной почты неотправлен");
             }
 
-            await _userManager.AddToRoleAsync(user,Role.Shopper);  //'shopper'
+            await _userManager.AddToRoleAsync(user, Role.Shopper);  //'shopper'
 
             return StatusCode(201);
         }
@@ -203,7 +203,7 @@ namespace ShopAPI.Controllers
 
             var callback = QueryHelpers.AddQueryString(forgotPasswordDto.ClientURI, param);
 
-            var message = new Message(new string[] {forgotPasswordDto.Email }, "сбросить  пароль ", callback, null);
+            var message = new Message(new string[] { forgotPasswordDto.Email }, "сбросить  пароль ", callback, null);
             await _emailSender.SendEmailAsync(message);
 
             return Ok();
@@ -313,4 +313,4 @@ namespace ShopAPI.Controllers
 
     }
 }
-    
+

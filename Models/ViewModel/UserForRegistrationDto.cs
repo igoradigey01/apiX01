@@ -7,9 +7,17 @@ namespace ShopAPI.Model
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        
         [Required(ErrorMessage = "Незадан Email")]
         [EmailAddress]
         public string Email { get; set; }
+
+        public string Address { get; set; }
+
+        [Required(ErrorMessage = "Незадан Телефон")]
+        public string Phone { get; set; }
+
+
 
         [Required(ErrorMessage = "Незадан Пароль")]
         [DataType(DataType.Password)]

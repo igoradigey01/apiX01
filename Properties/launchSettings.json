@@ -17,7 +17,7 @@
           "ClientSecrets": "client_secret_swagger",
           "Issuer": "http://localhost:5010",
           "Audience": "http://localhost:4200",
-        
+
 
 
 
@@ -26,11 +26,11 @@
           "AdminEmail": "sh23@x-01.ru",
           "AdminPhone": "+79002440328",
           "ConnectString": "server=127.0.0.1;port=3306;UserId=root;Password=747Ii81FN3DL-test;",
-          "From": "admin@x-01.ru",
+          "From": "admin_mail@x-01.ru",
           "SmtpServer": "smtp.mail.ru",
           "Port": "465",
-          "Username": "admin@x-01.ru",
-          "Password": "Jwv3nXsTY84qZysFAnUu"
+          "Username": "admin_mail@x-01.ru",
+          "Password": "t30gK5YGenyeGMVpuYip"
 
         }
        

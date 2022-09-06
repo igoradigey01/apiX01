@@ -12,6 +12,6 @@ published/
 # my Files
 *.temp.* 
 docker-compose.yml
-#launchSettings.json
+launchSettings.json
 #docker-compose.yml
 /images
