@@ -22,6 +22,7 @@ namespace ShopAPI.Controllers
 {
 
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public class AccountController : ControllerBase
     {
@@ -47,6 +48,7 @@ namespace ShopAPI.Controllers
 
 
         [HttpPost("Login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginInputModelDto login) //[FromBody] LoginInputModel login
         {
 
@@ -99,6 +101,7 @@ namespace ShopAPI.Controllers
         }*/
 
         [HttpPost("ExternalLogin")]
+        [AllowAnonymous]
         public async Task<IActionResult> ExternalLogin([FromBody] ExternalAuthDto externalAuth)
         {
             throw new Exception("not implimetn exeption 30.11.21");
@@ -141,6 +144,7 @@ namespace ShopAPI.Controllers
 
         //[Route("Register")]
         [HttpPost("Registration")]
+        [AllowAnonymous]
         public async Task<IActionResult> RegisterUser([FromBody] UserForRegistrationDto userForRegistration)
         {
             if (userForRegistration == null || !ModelState.IsValid)
@@ -185,6 +189,7 @@ namespace ShopAPI.Controllers
         }
 
         [HttpPost("ForgotPassword")]
+        [AllowAnonymous]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotPasswordDto)
         {
             if (!ModelState.IsValid)
@@ -211,7 +216,8 @@ namespace ShopAPI.Controllers
 
 
         [HttpPost("ResetPassword")]
-        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPasswordMiall([FromBody] ResetPasswordDto resetPasswordDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -233,6 +239,7 @@ namespace ShopAPI.Controllers
 
 
         [HttpGet("EmailConfirmation")]
+        [AllowAnonymous]
         public async Task<IActionResult> EmailConfirmation([FromQuery] string email, [FromQuery] string token)
         {
             var user = await _userManager.FindByEmailAsync(email);
@@ -248,7 +255,6 @@ namespace ShopAPI.Controllers
 
         //--------------------------------------------
         [HttpGet("IsTokenValid")]
-        [Authorize]
         public IActionResult IsTokenValid()
         {
             Console.WriteLine("isValid get ok");
@@ -267,14 +273,11 @@ namespace ShopAPI.Controllers
             var userRoles = await _userManager.GetRolesAsync(user);
 
 
-
-
             var claims = new List<Claim> {
-                 new Claim(JwtRegisteredClaimNames.NameId, user.Id) ,
-                // new Claim(JwtRegisteredClaimNames.NameId,user.Id),
-              //  new Claim(ClaimsIdentity.DefaultRoleClaimType,) // частный случай авторизации на основе claims, 
-                 //так как роль(role) это тот же объект Claim, имеющий тип ClaimsIdentity.DefaultRoleClaimType
-                 
+
+                new Claim(JwtRegisteredClaimNames.NameId, user.Id) ,
+
+
                  };
             foreach (var r in userRoles)
             {
@@ -297,7 +300,7 @@ namespace ShopAPI.Controllers
 
                 Expires = time.Add(TimeSpan.FromMinutes(LIFETIME)),
                 Issuer = Environment.GetEnvironmentVariable("Issuer"),// издатель токена
-                Audience = Environment.GetEnvironmentVariable("Audience"),// потребитель токена
+                Audience = "http://localhost:8080,http://localhost:4200,x-01.ru,xf-01.ru,xl-01.ru",// Environment.GetEnvironmentVariable("Audience"),// потребитель токена
                 SigningCredentials = new SigningCredentials(mySecurityKey, SecurityAlgorithms.HmacSha256Signature)
             };
 

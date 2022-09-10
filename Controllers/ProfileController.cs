@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 namespace ShopAPI.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class ProfileController : ControllerBase
     {
@@ -32,41 +33,31 @@ namespace ShopAPI.Controllers
 
         }
 
-        //  [Route("Profile")]
-        [Authorize]
-        [HttpGet]
+       
+        
+        [HttpGet("GetUser")]
         public async Task<IActionResult> GetUser()
         {
-            /* //int i=this.HttpContext.Request.Headers.Count;
-
-             *//*
-             foreach (var item in this.HttpContext.Request.Headers)
-             {
-                  Console.WriteLine(item.Value);
-
-             }
-             *//*
 
 
-             // Console.WriteLine(this.HttpContext.Request.Headers.ToArray());
-             var guidClaim = this.HttpContext.User.Claims.FirstOrDefault();
+            var user = await _userManager.GetUserAsync(HttpContext.User);
 
-             // Console.WriteLine("test Profile");
+            Console.WriteLine("test Profile"+user);
 
              // Console.WriteLine(""+this.HttpContext.ToString());
              // id  должен быть первым в cla
              //FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
-             if (guidClaim != null)
+             if (user != null)
              {
               //   var idUser = Guid.Parse(idUserClaim.Value);
-                 var user = await this._userManager.FindByIdAsync(guidClaim.Value);                                     //_repository.GetUserId(idUser);
+                // var user = await this._userManager.FindByIdAsync(userId.Claims[]);                                     //_repository.GetUserId(idUser);
                  UserProfileDto userSerialize = new UserProfileDto();
-                 userSerialize.Name = user.Name;
+                 userSerialize.FirstName = user.FirstName;
+                userSerialize.LastName = user.LastName;
                  userSerialize.Address = user.Address;
                  userSerialize.Email = user.Email;
                  userSerialize.Phone = user.Phone;
-                 userSerialize.Password = user.Password;
-                 // Console.WriteLine("User Profile get httpGet ok");
+               
 
                  return Ok(userSerialize);
              }
@@ -75,68 +66,52 @@ namespace ShopAPI.Controllers
                  ModelState.AddModelError("User", "Данный Пользоватль Несуществует - обратитесь к Администратору ресурса");
                  Console.WriteLine("User Profile get httpGet BadRequst");
                  return BadRequest(ModelState);
-             }*/
-            throw new NotImplementedException();
+             }
+           
         }
 
         //---------------------------------------------------------------------------------
 
-        // [Route("Edit")]
-        [Authorize]
-        [HttpPost]
+        
+       
+        [HttpPost("EditUser")]
         public async Task<IActionResult> UpdateUser(UserProfileDto userSerialize)
         {
-            Console.WriteLine("SetUserProfile-----------Start--");
+            var user = await _userManager.GetUserAsync(HttpContext.User);
 
-            /*   var guidClaim = this.HttpContext.User.Claims.FirstOrDefault();
+            if (user!=null)
+            {
+                user.LastName = userSerialize.LastName;
+                user.FirstName = userSerialize.FirstName;
+                user.PhoneNumber = userSerialize.Phone;
+                user.Email = userSerialize.Email;
+                user.Address = userSerialize.Address;
+            var result =    await _userManager.UpdateAsync(user);
+                if (result.Succeeded)
+                {
+                    return Ok();
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Что-то пошло не так");
+                    return BadRequest(ModelState);
+                }
+               
 
-
-               if (guidClaim != null)
-               {
-                  // int idUser = int.Parse(guidClaim.Value);
-                   var user = await this._userManager.FindByIdAsync(guidClaim.Value)                                // _repository.GetUserId(idUser);
-
-                   if (userSerialize.Name != user.Name)
-                   {
-                       user.Name = userSerialize.Name;
-                   }
-                   if (userSerialize.Address != user.Address)
-                   {
-                       user.Address = userSerialize.Address;
-                   }
-                   if (userSerialize.Email != user.Email)
-                   {
-                       user.Email = userSerialize.Email;
-                   }
-                   if (userSerialize.Phone != user.Phone)
-                   {
-                       user.Phone = userSerialize.Phone;
-                   }
-                   if (userSerialize.Password != user.Password)
-                   {
-                       user.Password = userSerialize.Password;
-                   }
-                   // Console.WriteLine("User Profile get httpGet ok");
-                   _repository.SaveUser(user);
-                   //throw new NotImplementedException();
-
-                   return Ok();
-
-               }
+            }             
                else
                {
                    ModelState.AddModelError("User", "Данный Пользоватль Несуществует - обратитесь к Администратору ресурса");
                    Console.WriteLine("User Profile get httpGet BadRequst");
                    return BadRequest(ModelState);
-               }*/
-            throw new NotImplementedException();
+               }
+           
 
 
         }
 
         //----------------------------------
-        [Route("Delete")]
-        [Authorize(Roles = Role.Admin)]
+        [Route("Delete")]        
         [HttpDelete]
         public IActionResult DeleteUser()
         {
