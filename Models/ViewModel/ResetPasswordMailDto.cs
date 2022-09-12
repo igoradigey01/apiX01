@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 namespace ShopAPI.Model
 {
-    public class ResetPasswordDto
+    public class ResetPasswordMailDto
     {
         [Required(ErrorMessage = "Password is required")]
         public string Password { get; set; }

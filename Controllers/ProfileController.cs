@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using ShopAPI.Model;
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ShopAPI.Controllers
@@ -110,14 +111,52 @@ namespace ShopAPI.Controllers
 
         }
 
-        //----------------------------------
-        [Route("Delete")]        
-        [HttpDelete]
-        public IActionResult DeleteUser()
+        [HttpPost("ResetPasswordProfile")]       
+        public async Task<IActionResult> ResetPasswordProfile([FromBody] ResetPasswordProfileDto resetPasswordDto)
         {
-            throw new NotImplementedException();
+            //Console.Write(resetPasswordDto);
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var user = await _userManager.FindByEmailAsync(resetPasswordDto.Email);
+            if (user == null)
+                return BadRequest("Invalid Request");
+
+            var resetPassResult = await _userManager.ChangePasswordAsync(user,resetPasswordDto.OldPassword,resetPasswordDto.NewPassword);
+            if (!resetPassResult.Succeeded)
+            {
+                var errors = resetPassResult.Errors.Select(e => e.Description);
+
+                return BadRequest(new { Errors = errors });
+            }
+
+            return Ok();
         }
 
-        ///-----------------------------------------
+        //----------------------------------
+
+        [HttpDelete("Delete/{id}")]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+
+            if (user == null)
+                return BadRequest("User Not Found");
+            if(!user.Email.Equals(id))
+                return BadRequest("this mail not for user account");
+            var resetPassResult = await _userManager.DeleteAsync(user);
+
+                if (!resetPassResult.Succeeded)
+                {
+                    var errors = resetPassResult.Errors.Select(e => e.Description);
+
+                    return BadRequest(new { Errors = errors });
+                }
+
+                return Ok();
+            
+
+        }
     }
 }

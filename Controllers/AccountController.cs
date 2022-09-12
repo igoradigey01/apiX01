@@ -200,6 +200,7 @@ namespace ShopAPI.Controllers
                 return BadRequest("Invalid Request");
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
             var param = new Dictionary<string, string>
             {
                 {"token", token },
@@ -215,9 +216,9 @@ namespace ShopAPI.Controllers
         }
 
 
-        [HttpPost("ResetPassword")]
+        [HttpPost("ResetPasswordMail")]
         [AllowAnonymous]
-        public async Task<IActionResult> ResetPasswordMiall([FromBody] ResetPasswordDto resetPasswordDto)
+        public async Task<IActionResult> ResetPasswordMiall([FromBody] ResetPasswordMailDto resetPasswordDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -237,6 +238,7 @@ namespace ShopAPI.Controllers
             return Ok();
         }
 
+       
 
         [HttpGet("EmailConfirmation")]
         [AllowAnonymous]
