@@ -247,7 +247,7 @@ namespace ShopAPI.Controllers
             item.Description = form["description"];
             //  item.Image= form["imgName"]; !!!21.02.22
 
-            var guid = form["guid"];
+            var guid = form["imageGuid"];
 
             var flagGuid = Guid.TryParse(guid, out var i);
             if (!flagGuid)

@@ -16,7 +16,8 @@ using AutoMapper;
 using Microsoft.AspNetCore.WebUtilities;
 using NETCore.MailKit.Core;
 using EmailService;
-
+using X01Api.Models.ViewModel;
+using System.Security.Cryptography;
 
 namespace ShopAPI.Controllers
 {
@@ -88,17 +89,102 @@ namespace ShopAPI.Controllers
 
 
         }
+        [HttpPost("ExternalTelegram")]
+        [AllowAnonymous]
+        public IActionResult ExternalTelegram([FromBody] UserTelegramDto user)
+        {
+
+            //throw new Exception("not Empliment - ExternalLogin");
+
+            // place bot token of your bot here
+            //https://xl-01.ru/telelram-callback?id=5384361370&first_name=Igor&username=igor_01ts&auth_date=1663303742&hash=bd734108e0d695bd89a6eaf56e50b3cdc2a5adc8dc4e98a8c777bc66545bebbf
+            //https://gist.github.com/anonymous/6516521b1fb3b464534fbc30ea3573c2
+            // https://codex.so/telegram-auth?ysclid=l89qryxyrb334407760
+
+
+
+
+            StringBuilder dataStringBuilder = new StringBuilder(256);
+
+            dataStringBuilder.Append("auth_date");
+            dataStringBuilder.Append('=');
+            dataStringBuilder.Append(user.AuthDate);
+            dataStringBuilder.Append('\n');
+
+            dataStringBuilder.Append("first_name");
+            dataStringBuilder.Append('=');
+            dataStringBuilder.Append(user.FirstName);
+            dataStringBuilder.Append('\n');
+
+            dataStringBuilder.Append("id");
+            dataStringBuilder.Append('=');
+            dataStringBuilder.Append(user.Id);
+            dataStringBuilder.Append('\n');
+
+
+            
+
+
+            dataStringBuilder.Append("username");
+            dataStringBuilder.Append('=');
+            dataStringBuilder.Append(user.UserName);
+       //     dataStringBuilder.Append('\n');
+
+            
+            // byte[] signature = _hmac.ComputeHash(Encoding.UTF8.GetBytes(dataStringBuilder.ToString()));
+
+            var secretKey = ShaHash(Environment.GetEnvironmentVariable("Telegram_token_bot"));
+
+            var myHash = HashHmac(secretKey, Encoding.UTF8.GetBytes(dataStringBuilder.ToString()));
+
+            //php   hash   https://php.ru/manual/function.hash.html?ysclid=l87m3tbcl2736101629
+            //php   hash_hmac   https://www.php.net/manual/ru/function.hash-hmac.php
+            //php    time()  https://www.php.net/manual/ru/function.time.php
+
+            var teltime = int.Parse(user.AuthDate);
+            var time = DateTimeOffset.Now.ToUnixTimeSeconds(); 
+
+
+              if ((time - teltime) > 86400)// 24часа
+            {
+               return BadRequest("Data is outdated");
+            }
+
+            var myHashStr = String.Concat(myHash.Select(i => i.ToString("x2")));
+            if (myHashStr == user.Hash)
+            {
+                // Data is from telegram
+                return Ok();
+            }
+
+
+            return BadRequest("hash error");
+
+
+        }
+
+        private  byte[] ShaHash(String value) { 
+            using (var hasher = SHA256.Create()) 
+            
+            { return hasher.ComputeHash(Encoding.UTF8.GetBytes(value)); } 
+        }
+
+        private  byte[] HashHmac(byte[] key, byte[] message)
+        {
+            var hash = new HMACSHA256(key);
+            return hash.ComputeHash(message);
+        }
 
         /// FaceBook VK Instogramm singIn 04.08.21
-       /* [HttpPost("ExternalLogin")]
-        public IActionResult ExternalLogin(string provider, string returnUrl)
-        {
-            throw new Exception("not Empliment - ExternalLogin");
-            *//* var redirectUrl = Url.Action(nameof(ExternalLoginCollback), "Auth", new { returnUrl });
-            //  var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl); var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
-            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
-            return Challenge(properties, provider); *//*
-        }*/
+        /* [HttpPost("ExternalLogin")]
+         public IActionResult ExternalLogin(string provider, string returnUrl)
+         {
+             throw new Exception("not Empliment - ExternalLogin");
+             *//* var redirectUrl = Url.Action(nameof(ExternalLoginCollback), "Auth", new { returnUrl });
+             //  var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl); var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+             return Challenge(properties, provider); *//*
+         }*/
 
         [HttpPost("ExternalLogin")]
         [AllowAnonymous]
@@ -238,7 +324,7 @@ namespace ShopAPI.Controllers
             return Ok();
         }
 
-       
+
 
         [HttpGet("EmailConfirmation")]
         [AllowAnonymous]

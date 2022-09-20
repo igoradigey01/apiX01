@@ -30,7 +30,8 @@
           "SmtpServer": "smtp.mail.ru",
           "Port": "465",
           "Username": "admin_mail@x-01.ru",
-          "Password": "t30gK5YGenyeGMVpuYip"
+          "Password": "t30gK5YGenyeGMVpuYip",
+          "Telegram_token_bot": "5200452570:AAG3HwpXmY0LHPzrbRvs4oHd_PQkXyiipsU"
 
         }
        
