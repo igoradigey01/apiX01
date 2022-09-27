@@ -18,6 +18,12 @@ using NETCore.MailKit.Core;
 using EmailService;
 using X01Api.Models.ViewModel;
 using System.Security.Cryptography;
+using Google.Apis.Auth;
+using System.IO;
+using System.Net.Http;
+using System.Net;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace ShopAPI.Controllers
 {
@@ -89,9 +95,9 @@ namespace ShopAPI.Controllers
 
 
         }
-        [HttpPost("ExternalTelegram")]
+        [HttpPost("TelegramExternalLogin")]
         [AllowAnonymous]
-        public IActionResult ExternalTelegram([FromBody] UserTelegramDto user)
+        public async Task<IActionResult> TelegramExternalLogin([FromBody] UserTelegramDto user)
         {
 
             //throw new Exception("not Empliment - ExternalLogin");
@@ -151,10 +157,38 @@ namespace ShopAPI.Controllers
             }
 
             var myHashStr = String.Concat(myHash.Select(i => i.ToString("x2")));
+            var providerKey = user.Id;
             if (myHashStr == user.Hash)
             {
-                // Data is from telegram
-                return Ok();
+                //AspNetUserLogins   table in identity BD
+                //ProviderKey — это уникальный ключ Facebook, связанный с пользователем на Facebook.
+               
+               
+                var info = new UserLoginInfo("Telegram", providerKey, "Telegram");
+
+                var user_tel = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+                
+                    
+                    if (user_tel == null)
+                    {
+                    user_tel = new User { FirstName=user.FirstName, UserName =user.UserName,NormalizedUserName= user.Id};
+                        await _userManager.CreateAsync(user_tel);
+                        //prepare and send an email for the email confirmation
+                        await _userManager.AddToRoleAsync(user_tel, Role.Shopper);
+                        await _userManager.AddLoginAsync(user_tel, info);
+                    }
+                    else
+                    {
+                        await _userManager.AddLoginAsync(user_tel, info);
+                    }
+                if (user_tel == null)
+                    return BadRequest("Invalid External Authentication.");
+
+                //----------------------------------------------
+                var accessToken = GenerateTokenAsync(user_tel).Result;
+                var refreshToken = "";
+
+                return Ok(new TokenModelDto { access_token = accessToken, refresh_token = refreshToken });
             }
 
 
@@ -186,47 +220,91 @@ namespace ShopAPI.Controllers
              return Challenge(properties, provider); *//*
          }*/
 
-        [HttpPost("ExternalLogin")]
+        [HttpPost("GoogleExternalLogin")]
         [AllowAnonymous]
-        public async Task<IActionResult> ExternalLogin([FromBody] ExternalAuthDto externalAuth)
+        public async Task<IActionResult> GoogleExternalLogin ([FromBody] ExternalAuthDto externalAuth)
         {
-            throw new Exception("not implimetn exeption 30.11.21");
+            var payload = await VerifyGoogleToken(externalAuth);
+            if (payload == null)
+                return BadRequest("Invalid External Authentication.");
 
-            /* var payload = await _jwtHandler.VerifyGoogleToken(externalAuth);
-             if (payload == null)
-                 return BadRequest("Invalid External Authentication.");
+            var info = new UserLoginInfo(externalAuth.Provider, payload.Subject, externalAuth.Provider);
 
-             var info = new UserLoginInfo(externalAuth.Provider, payload.Subject, externalAuth.Provider);
+            var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+            if (user == null)
+            {
+                user = await _userManager.FindByEmailAsync(payload.Email);
+                if (user == null)
+                {
+                    user = new User { Email = payload.Email, UserName = payload.Email ,FirstName=user.FirstName,LastName=user.LastName};
+                    await _userManager.CreateAsync(user);
 
-             var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
-             if (user == null)
-             {
-                 user = await _userManager.FindByEmailAsync(payload.Email);
+                    //prepare and send an email for the email confirmation
 
-                 if (user == null)
-                 {
-                     user = new User { Email = payload.Email, UserName = payload.Email };
-                     await _userManager.CreateAsync(user);
+                    await _userManager.AddToRoleAsync(user, Role.Shopper);
+                    await _userManager.AddLoginAsync(user, info);
+                }
+                else
+                {
+                    await _userManager.AddLoginAsync(user, info);
+                }
+            }
 
-                     //prepare and send an email for the email confirmation
+            if (user == null)
+                return BadRequest("Invalid External Authentication.");
 
-                     await _userManager.AddToRoleAsync(user, "Viewer");
-                     await _userManager.AddLoginAsync(user, info);
-                 }
-                 else
-                 {
-                     await _userManager.AddLoginAsync(user, info);
-                 }
-             }
+            //check for the Locked out account
 
-             if (user == null)
-                 return BadRequest("Invalid External Authentication.");
+            var accessToken = GenerateTokenAsync(user).Result;
+            var refreshToken = "";
 
-             //check for the Locked out account
-
-             var token = await _jwtHandler.GenerateToken(user);
-             return Ok(new AuthResponseDto { Token = token, IsAuthSuccessful = true });*/
+            return Ok(new TokenModelDto { access_token = accessToken, refresh_token = refreshToken });
         }
+
+        [HttpPost("VKExternalLogin")]
+        [AllowAnonymous]
+        public async Task<IActionResult> VKExternalLogin([FromBody] ExternalAuthDto externalAuth)
+        {
+
+
+            var payload = VerifyVKToken(externalAuth);
+            if (payload == null)
+                return BadRequest("Invalid External Authentication.");
+
+            var info = new UserLoginInfo(externalAuth.Provider, payload.UserId.ToString(), externalAuth.Provider);
+
+            var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+            if (user == null)
+            {
+              //  user = await _userManager.FindByEmailAsync(payload.Email);
+               
+                    user = new User { UserName = payload.UserId.ToString(), NormalizedUserName = payload.UserId.ToString(), FirstName = payload.FirstName, LastName = payload.LastName };
+                    await _userManager.CreateAsync(user);
+
+                    //prepare and send an email for the email confirmation
+
+                    await _userManager.AddToRoleAsync(user, Role.Shopper);
+                    await _userManager.AddLoginAsync(user, info);
+                
+                
+            }
+            else
+            {
+                await _userManager.AddLoginAsync(user, info);
+            }
+
+            if (user == null)
+                return BadRequest("Invalid External Authentication.");
+
+            //check for the Locked out account
+
+            var accessToken = GenerateTokenAsync(user).Result;
+            var refreshToken = "";
+
+            return Ok(new TokenModelDto { access_token = accessToken, refresh_token = refreshToken });
+        }
+
+
 
         //[Route("Register")]
         [HttpPost("Registration")]
@@ -330,6 +408,7 @@ namespace ShopAPI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> EmailConfirmation([FromQuery] string email, [FromQuery] string token)
         {
+            //https://github.com/CodeMazeBlog/angular-identity-aspnetcore-security/tree/angular-google-authentication-identity
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
                 return BadRequest("Invalid Email Confirmation Request");
@@ -398,9 +477,140 @@ namespace ShopAPI.Controllers
         }
 
 
+        private async Task<GoogleJsonWebSignature.Payload> VerifyGoogleToken(ExternalAuthDto externalAuth)
+        {
+
+            //https://console.cloud.google.com/apis/credentials?project=x-01-mystore
+            //https://github.com/CodeMazeBlog/angular-identity-aspnetcore-security/blob/angular-google-authentication-identity/Web%20API/CompanyEmployees/CompanyEmployees/Program.cs
+            try
+            {
+                var settings = new GoogleJsonWebSignature.ValidationSettings()
+                {
+                    Audience = new List<string>() { Environment.GetEnvironmentVariable("Google_idToken") }
+                };
+                var payload = await GoogleJsonWebSignature.ValidateAsync(externalAuth.IdToken, settings);
+                return payload;
+            }
+            catch (Exception ex)
+            {
+                //log an exception
+                return null;
+            }
+        }
+
+        //https://www.kbss.ru/blog/netcore/325.html
+        private VkProfileDto VerifyVKToken(ExternalAuthDto externalAuth)
+        {
+            // https://vk.com/dev/client_cred_flow
+            //https://ru.stackoverflow.com/questions/590065/vk-api-%D0%9A%D0%B0%D0%BA-%D0%B8%D0%B7-standalone-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F-%D0%BF%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%B8%D1%82%D1%8C-%D0%B2%D0%B0%D0%BB%D0%B8%D0%B4%D0%BD%D0%BE%D1%81%D1%82%D1%8C-%D1%82%D0%BE%D0%BA%D0%B5%D0%BD%D0%B0-%D0%BC%D0%B5%D1%82%D0%BE%D0%B4%D0%BE%D0%BC-secure-c?ysclid=l8k6p5f1iy824577111
+            VkProfileDto profile = new VkProfileDto();
+
+            var vk_client_id = Environment.GetEnvironmentVariable("VK_id");
+            var vk_client_secret= Environment.GetEnvironmentVariable("VK_secret");
+            var vk_token_for_secureValidate = VK_GetSecureToken(vk_client_id, vk_client_secret);
+
+            string str = GetRequest("api.vk.com", "https://api.vk.com/method/secure.checkToken?token=" 
+                + externalAuth.IdToken + "&v=5.131&client_secret=" 
+                + vk_token_for_secureValidate 
+                + "&access_token=" + vk_token_for_secureValidate);
+            dynamic stuff = JsonConvert.DeserializeObject(str);
+            
+            try
+            {
+                profile.IsAutorized = stuff.response.success;
+                profile.UserId = stuff.response.user_id;
+                profile.Expire = stuff.response.expire;
+                profile.Date = stuff.response.date;
+            }
+            catch (Exception ex) {
+                Console.WriteLine(ex);
+                return null; 
+            }
+
+            try
+            {
+               
+
+                profile = VK_GetUserData(externalAuth.IdToken, profile);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return null;
+            }
+
+            return profile;
+
+        }
 
 
+        public  VkProfileDto VK_GetUserData(string token, VkProfileDto profile)
+        {
+            try
+            {
+                string str = GetRequest("api.vk.com", "https://api.vk.com/method/users.get?access_token=" 
+                    + token +                   
+                    "&v=5.85");
 
+
+                dynamic stuff = JsonConvert.DeserializeObject(str);
+
+                profile.FirstName = stuff.response[0].first_name;
+                profile.LastName = stuff.response[0].last_name;
+                profile.UserId = stuff.response[0].id;
+                
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return null;
+            }
+
+            return profile;
+        }
+
+        /// <summary>
+        /// Получение разового токена с сервера для работы.
+        /// </summary>
+        /// <param name="client_id"></param>
+        /// <param name="client_secret"></param>
+        public string VK_GetSecureToken(string client_id, string client_secret)
+        {
+            string str = GetRequest("oauth.vk.com", "https://oauth.vk.com/access_token?client_id=" + client_id + "&client_secret=" + client_secret + "&v=5.131&grant_type=client_credentials");
+            dynamic stuff = JsonConvert.DeserializeObject(str);
+            string token = stuff.access_token;
+            return token;
+        }
+        /// <summary>
+        /// Отправляем запрос на получение 
+        /// </summary>
+        /// <param name="req"></param>
+        /// <returns></returns>
+        private  string GetRequest(string host, string req)
+        {
+            string str = "";
+
+            var Vk = new HttpClient();
+            Vk.DefaultRequestHeaders.Add("Connection", "close");
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(req);
+            request.UseDefaultCredentials = true;
+            request.PreAuthenticate = true;
+            request.Credentials = CredentialCache.DefaultCredentials;
+            request.Method = "GET";
+            request.Host = host;
+            request.UserAgent = "RM";
+            request.ContentType = "application/x-www-form-urlencoded";
+            request.KeepAlive = false;
+
+            using (HttpWebResponse responsevk = (HttpWebResponse)request.GetResponse())
+            using (var stream = responsevk.GetResponseStream())
+            using (var streamReader = new StreamReader(stream, Encoding.UTF8))
+            {
+                str = streamReader.ReadToEnd();
+            }
+            return str;
+        }
 
     }
 }

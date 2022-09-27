@@ -39,3 +39,11 @@ scp -r C:\Users\Ks34\Documents\AngularProject\xf01\dist\xf01 root@46.---.---.---
 
 dotnet ef dbcontext scaffold "server=localhost;port=3306;user=root;password=12345;database=MyShop"  Pomelo.EntityFrameworkCore.MySql -o Models <br/>
 dotnet ef dbcontext scaffold "Server=localhost;Database=ef;User=root;Password=123456;TreatTinyAsBoolean=true;" "Pomelo.EntityFrameworkCore.MySql" <br/>
+
+### dotnet user-secrets 
+```
+https://www.youtube.com/watch?v=GF0Mn-g7Nf0
+dotnet user-secrets init
+dotnet user-secrets set "Authentication:Google:ClientId" secret
+dotnet user-secrets set "Authentication:Google:ClientSecret" secret
+```

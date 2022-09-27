@@ -31,7 +31,11 @@
           "Port": "465",
           "Username": "admin_mail@x-01.ru",
           "Password": "t30gK5YGenyeGMVpuYip",
-          "Telegram_token_bot": "5200452570:AAG3HwpXmY0LHPzrbRvs4oHd_PQkXyiipsU"
+          "Telegram_token_bot": "5200452570:AAG3HwpXmY0LHPzrbRvs4oHd_PQkXyiipsU",
+          "VK_id": "51431968",
+          "VK_secret": "VykbJYZq67IyNuwdZcEv",
+          "Google_idToken": "344759916833-h3r1fju9hj53jd86d142tn44vta9vnsa.apps.googleusercontent.com"
+
 
         }
        

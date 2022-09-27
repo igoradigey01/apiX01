@@ -4,12 +4,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 //----------------------------------------------
-
+using System.Threading.Tasks;
 
 using System;
 using System.Text;
 using ShopAPI.Model;
 
+using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Options;
@@ -21,6 +22,10 @@ using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using EmailService;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authentication.OAuth;
+using static Org.BouncyCastle.Math.EC.ECCurve;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
 
 namespace ShopAPI
 {
@@ -121,7 +126,7 @@ namespace ShopAPI
                     opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 }
                 )
-                    .AddJwtBearer( options =>
+                    .AddJwtBearer(options =>
                     {
                         options.RequireHttpsMetadata = false;
                         options.TokenValidationParameters = new TokenValidationParameters
@@ -135,7 +140,7 @@ namespace ShopAPI
                             ValidateAudience = true,
                             // установка потребителя токена
                             ValidAudience = "http://localhost:8080,http://localhost:4200,x-01.ru,xf-01.ru,xl-01.ru",
-                            
+
                             //Environment.GetEnvironmentVariable("Audience"),
                             // будет ли валидироваться время существования
                             ValidateLifetime = true,
@@ -152,8 +157,10 @@ namespace ShopAPI
 
                     });
 
+
         }
 
+       
 
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
