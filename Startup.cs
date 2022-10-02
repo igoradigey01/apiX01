@@ -84,7 +84,9 @@ namespace ShopAPI
                 option => option.AddDefaultPolicy(builder => builder
                    .WithOrigins(Environment.GetEnvironmentVariable("FrontClient1"),
                                  Environment.GetEnvironmentVariable("FrontClient2"),
-                                 "https://xl-01.ru"
+                                 "https://xl-01.ru",
+                                 "https://www.googleapis.com",
+                                 "https://api.vk.com"
                                )
                    // .AllowAnyOrigin()
                    .AllowAnyHeader()
