@@ -236,7 +236,14 @@ namespace ShopAPI.Controllers
                 user = await _userManager.FindByEmailAsync(payload.Email);
                 if (user == null)
                 {
-                    user = new User { Email = payload.Email, UserName = payload.Email ,FirstName=user.FirstName,LastName=user.LastName};
+                    user = new User { Email = payload.Email,
+                        UserName = payload.Email ,
+                        FirstName= payload.FamilyName,
+                        LastName= payload.Name ,
+                        Address="",
+                        Phone="",
+                        RefreshToken = ""
+                    };
                     await _userManager.CreateAsync(user);
 
                     //prepare and send an email for the email confirmation

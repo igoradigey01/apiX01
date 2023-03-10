@@ -22,7 +22,7 @@ using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using EmailService;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Authentication.OAuth;
+
 using static Org.BouncyCastle.Math.EC.ECCurve;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
@@ -82,11 +82,17 @@ namespace ShopAPI
 
             services.AddCors(
                 option => option.AddDefaultPolicy(builder => builder
-                   .WithOrigins(Environment.GetEnvironmentVariable("FrontClient1"),
+                   .WithOrigins(Environment.GetEnvironmentVariable("FrontClient1"), 
                                  Environment.GetEnvironmentVariable("FrontClient2"),
                                  "https://xl-01.ru",
-                                 "https://www.googleapis.com",
-                                 "https://api.vk.com"
+                                  "https://*.googleapis.com",
+                               "https://accounts.google.com",
+
+
+                                 "https://oauth.vk.com/",
+                                 "https://oauth.yandex.ru",
+                                 "https://xf-01.ru",
+                                 "https://mh-01.ru"
                                )
                    // .AllowAnyOrigin()
                    .AllowAnyHeader()
@@ -141,7 +147,7 @@ namespace ShopAPI
                             // будет ли валидироваться потребитель токена
                             ValidateAudience = true,
                             // установка потребителя токена
-                            ValidAudience = "http://localhost:8080,http://localhost:4200,x-01.ru,xf-01.ru,xl-01.ru",
+                            ValidAudience = "http://localhost:8080,http://localhost:4200,x-01.ru,xf-01.ru,xl-01.ru,mh-01.ru",
 
                             //Environment.GetEnvironmentVariable("Audience"),
                             // будет ли валидироваться время существования
