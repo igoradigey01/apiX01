@@ -85,7 +85,7 @@ namespace ShopAPI
                    .WithOrigins(Environment.GetEnvironmentVariable("FrontClient1"), 
                                  Environment.GetEnvironmentVariable("FrontClient2"),
                                  "https://xl-01.ru",
-                                  "https://*.googleapis.com",
+                                  "https://www.googleapis.com/",
                                "https://accounts.google.com",
 
 
@@ -184,12 +184,18 @@ namespace ShopAPI
             //-------  Cors all servers------------
 
             app.UseCors();
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedProto
+            });
 
             //15.09.21
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
+            //10.03.23
+            
             app.UseAuthentication();
             app.UseAuthorization();
             //------------20.12.20-----------
