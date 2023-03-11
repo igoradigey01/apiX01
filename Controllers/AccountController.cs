@@ -506,8 +506,10 @@ namespace ShopAPI.Controllers
                 return null;
             }
         }
-
-        //https://www.kbss.ru/blog/netcore/325.html
+        //https://vk.com/apps?act=manage
+        // https://vk.com/dev/web_how_to_start
+        // ---help ---
+        //https://kotoff.net/article/39-avtorizacija-na-sajte-s-pomoschju-vk-prostoj-i-ponjatnyj-sposob-na-php.html
         private VkProfileDto VerifyVKToken(ExternalAuthDto externalAuth)
         {
             // https://vk.com/dev/client_cred_flow
