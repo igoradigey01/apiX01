@@ -272,7 +272,8 @@ namespace ShopAPI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> VKExternalLogin([FromBody] ExternalAuthDto externalAuth)
         {
-
+                 // https://snipp.ru/php/oauth-vk
+                 //https://zink66.ru/akkaunt/token-vk.html
 
             var payload = VerifyVKToken(externalAuth);
             if (payload == null)
