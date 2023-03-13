@@ -503,6 +503,7 @@ namespace ShopAPI.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 //log an exception
                 return null;
             }

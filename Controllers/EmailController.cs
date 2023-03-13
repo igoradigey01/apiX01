@@ -20,7 +20,7 @@ namespace ShopAPI.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+       // [Authorize]
         public IActionResult Post()
         {
             var message = new Message(new string[] { "agape962@mail.ru" }, "Test email", "This is the content from our email.", null);
