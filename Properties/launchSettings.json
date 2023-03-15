@@ -30,10 +30,10 @@
           "SmtpServer": "smtp.mail.ru",
           "Port": "465",
           "Username": "admin_mail@x-01.ru",
-          "Password": "t30gK5YGenyeGMVpuYip",
-          "Telegram_token_bot": "5200452570:AAG3HwpXmY0LHPzrbRvs4oHd_PQkXyiipsU",
-                    
-          "Google_idToken": "344759916833-h3r1fju9hj53jd86d142tn44vta9vnsa.apps.googleusercontent.com"
+          "Password": "push on gitHub всегда не зависимо от установок .gitignore !!!!",
+          "Telegram_token_bot": "тестировать через docker-compose",
+           "VK":"тестировать через docker-compose",       
+          "Google_idToken": "тестировать через docker-compose"
 
 
         }

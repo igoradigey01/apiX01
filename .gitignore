@@ -12,6 +12,7 @@ published/
 # my Files
 *.temp.* 
 docker-compose.yml
-Properties/*.*
+# launchSettings.json not work !!!!!!
+launchSettings.json
 #docker-compose.yml
 /images

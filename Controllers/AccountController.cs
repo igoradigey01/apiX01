@@ -274,6 +274,7 @@ namespace ShopAPI.Controllers
         {
                  // https://snipp.ru/php/oauth-vk
                  //https://zink66.ru/akkaunt/token-vk.html
+                 
 
             var payload = VerifyVKToken(externalAuth);
             if (payload == null)
