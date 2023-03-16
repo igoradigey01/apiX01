@@ -268,13 +268,28 @@ namespace ShopAPI.Controllers
             return Ok(new TokenModelDto { access_token = accessToken, refresh_token = refreshToken });
         }
 
+
+
+
+        // https://snipp.ru/php/oauth-vk
+        //https://zink66.ru/akkaunt/token-vk.html
         [HttpPost("VKExternalLogin")]
         [AllowAnonymous]
-        public async Task<IActionResult> VKExternalLogin([FromBody] ExternalAuthDto externalAuth)
+        public async Task<IActionResult> VKExternalLogin()
         {
-                 // https://snipp.ru/php/oauth-vk
-                 //https://zink66.ru/akkaunt/token-vk.html
-                 
+
+         //   VKExternalLogin([FromBody] ExternalAuthDto externalAuth) -- not work !!!! 16.03.23
+
+            //string a = "test";
+
+            string body = "";
+            using (StreamReader stream = new StreamReader(Request.Body))
+            {
+                body = await stream.ReadToEndAsync();
+            }
+
+            var externalAuth = JsonConvert.DeserializeObject<ExternalAuthDto>(body);
+           // ExternalAuthDto externalAuth = new ExternalAuthDto {IdToken = "",IdUser="",Provider=""};
 
             var payload = VerifyVKToken(externalAuth);
             if (payload == null)
