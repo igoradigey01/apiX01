@@ -85,10 +85,8 @@ namespace ShopAPI
                    .WithOrigins(Environment.GetEnvironmentVariable("FrontClient1"), 
                                  Environment.GetEnvironmentVariable("FrontClient2"),
                                  "https://xl-01.ru",
-                                  "https://www.googleapis.com/",
-                               "https://accounts.google.com",
-
-
+                                 "https://www.googleapis.com/",
+                                 "https://accounts.google.com",
                                  "https://oauth.vk.com/",
                                  "https://oauth.yandex.ru",
                                  "https://xf-01.ru",
@@ -147,7 +145,7 @@ namespace ShopAPI
                             // будет ли валидироваться потребитель токена
                             ValidateAudience = true,
                             // установка потребителя токена
-                            ValidAudience = "http://localhost:8080,http://localhost:4200,x-01.ru,xf-01.ru,xl-01.ru,mh-01.ru",
+                            ValidAudience = Environment.GetEnvironmentVariable("Audience"),
 
                             //Environment.GetEnvironmentVariable("Audience"),
                             // будет ли валидироваться время существования
