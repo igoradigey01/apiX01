@@ -524,15 +524,17 @@ namespace ShopAPI.Controllers
                 return null;
             }
         }
-        //https://vk.com/apps?act=manage
-        // https://vk.com/dev/web_how_to_start
+        
         // ---help ---
+        
+       // https://vk.com/dev/widget_auth (!!!)
+        //https://dev.vk.com/api/open-api/getting-started(!!!)
         //https://kotoff.net/article/39-avtorizacija-na-sajte-s-pomoschju-vk-prostoj-i-ponjatnyj-sposob-na-php.html
         //https://babakov.net//blog/netcore/325.html
         private VkProfileDto VerifyVKToken(ExternalAuthDto externalAuth)
         {
-            // https://vk.com/dev/client_cred_flow
-            //https://ru.stackoverflow.com/questions/590065/vk-api-%D0%9A%D0%B0%D0%BA-%D0%B8%D0%B7-standalone-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F-%D0%BF%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%B8%D1%82%D1%8C-%D0%B2%D0%B0%D0%BB%D0%B8%D0%B4%D0%BD%D0%BE%D1%81%D1%82%D1%8C-%D1%82%D0%BE%D0%BA%D0%B5%D0%BD%D0%B0-%D0%BC%D0%B5%D1%82%D0%BE%D0%B4%D0%BE%D0%BC-secure-c?ysclid=l8k6p5f1iy824577111
+            
+           
             VkProfileDto profile = new VkProfileDto();
 
 
@@ -542,7 +544,7 @@ namespace ShopAPI.Controllers
 
             string str = GetRequest("api.vk.com", "https://api.vk.com:443/method/users.get?access_token="
                 + externalAuth.IdToken + "&v=5.131"                
-                + "&token=" + Environment.GetEnvironmentVariable("VK_Token"));
+                + "&token=" + Environment.GetEnvironmentVariable("VK_Token")+ "&user_ids="+externalAuth.IdUser);
             dynamic stuff = JsonConvert.DeserializeObject(str);
             
             try
