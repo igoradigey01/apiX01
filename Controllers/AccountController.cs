@@ -209,16 +209,7 @@ namespace ShopAPI.Controllers
             return hash.ComputeHash(message);
         }
 
-        /// FaceBook VK Instogramm singIn 04.08.21
-        /* [HttpPost("ExternalLogin")]
-         public IActionResult ExternalLogin(string provider, string returnUrl)
-         {
-             throw new Exception("not Empliment - ExternalLogin");
-             *//* var redirectUrl = Url.Action(nameof(ExternalLoginCollback), "Auth", new { returnUrl });
-             //  var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl); var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
-             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
-             return Challenge(properties, provider); *//*
-         }*/
+        
 
         [HttpPost("GoogleExternalLogin")]
         [AllowAnonymous]
@@ -271,25 +262,22 @@ namespace ShopAPI.Controllers
 
 
 
-        // https://snipp.ru/php/oauth-vk
-        //https://zink66.ru/akkaunt/token-vk.html
+        
         [HttpPost("VKExternalLogin")]
         [AllowAnonymous]
         public async Task<IActionResult> VKExternalLogin()
         {
+            //   VKExternalLogin([FromBody] ExternalAuthDto externalAuth) -- not work !!!! 16.03.23
+            // поле photo_rec_url -нереалиизовано
 
-         //   VKExternalLogin([FromBody] ExternalAuthDto externalAuth) -- not work !!!! 16.03.23
-
-            //string a = "test";
-
-            string body = "";
+            string body = String.Empty;
             using (StreamReader stream = new StreamReader(Request.Body))
             {
                 body = await stream.ReadToEndAsync();
             }
 
-            var externalAuth = JsonConvert.DeserializeObject<ExternalAuthDto>(body);
-           // ExternalAuthDto externalAuth = new ExternalAuthDto {IdToken = "",IdUser="",Provider=""};
+            var externalAuth = JsonConvert.DeserializeObject<ExternalVkDto>(body);
+           
 
             var payload = VerifyVKToken(externalAuth);
             if (payload == null)
@@ -524,50 +512,79 @@ namespace ShopAPI.Controllers
                 return null;
             }
         }
-        
+
         // ---help ---
-        
-       // https://vk.com/dev/widget_auth (!!!)
+
+        // https://vk.com/dev/widget_auth (!!!)
+        // hash vk https://habr.com/ru/sandbox/26984/
         //https://dev.vk.com/api/open-api/getting-started(!!!)
         //https://kotoff.net/article/39-avtorizacija-na-sajte-s-pomoschju-vk-prostoj-i-ponjatnyj-sposob-na-php.html
         //https://babakov.net//blog/netcore/325.html
-        private VkProfileDto VerifyVKToken(ExternalAuthDto externalAuth)
+        private VkProfileDto VerifyVKToken(ExternalVkDto vkDto)
         {
-            
-           
             VkProfileDto profile = new VkProfileDto();
 
-
-            
-
-
-
-            string str = GetRequest("api.vk.com", "https://api.vk.com:443/method/users.get?access_token="
-                + externalAuth.IdToken + "&v=5.131"                
-                + "&token=" + Environment.GetEnvironmentVariable("VK_Token")+ "&user_ids="+externalAuth.IdUser);
+            /* old reliz !!!Not work on provider (host)
+              string str = GetRequest("api.vk.com", "https://api.vk.com:443/method/users.get?access_token="
+                + externalAuth.IdToken + "&v=5.131"
+                + "&token=" + Environment.GetEnvironmentVariable("VK_Token") + "&user_ids=" + externalAuth.IdUser);
             dynamic stuff = JsonConvert.DeserializeObject(str);
-            
+
             try
             {
-                Console.WriteLine("VerifyVKToken---"+stuff);
+                Console.WriteLine("VerifyVKToken---" + stuff);
                 profile.FirstName = stuff.response[0].first_name;
                 profile.LastName = stuff.response[0].last_name;
                 profile.UserId = stuff.response[0].id;
 
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 Console.WriteLine(ex);
-                return null; 
+               
+            }*/
+
+
+            //Защищённый ключ--Environment.GetEnvironmentVariable("VK_Token")
+            string s = vkDto.IdApp+ vkDto.IdUser+ Environment.GetEnvironmentVariable("VK_Token");
+            string hash = MD5HashGet(s);
+            Console.WriteLine("--VK-- MD5HashGet--");
+            Console.WriteLine(hash);
+            Console.WriteLine(vkDto.Hash);
+
+            if (String.Equals(vkDto.Hash,hash)) {
+                profile.UserId =  vkDto.IdUser;
+                profile.FirstName = vkDto.First_name;
+                profile.LastName = vkDto.Last_name;
+
+                return profile;
+
             }
+            
 
            
-
-            return profile;
+            return null;
 
         }
 
+        static string MD5HashGet(string forHash )
+        {
+            byte[] hash = Encoding.ASCII.GetBytes(forHash);
+            MD5 md5 = new MD5CryptoServiceProvider();
+            byte[] hashenc = md5.ComputeHash(hash);
+            string result = "";
+            foreach (var b in hashenc)
+            {
+                result += b.ToString("x2");
+            }
+            return result;
+        }
 
-       
+
+
+
+
+
         /// <summary>
         /// Отправляем запрос на получение 
         /// </summary>

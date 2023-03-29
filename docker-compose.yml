@@ -42,7 +42,7 @@ services:
        Password: t30gK5YGenyeGMVpuYip 
        Telegram_token_bot : "5200452570:AAG3HwpXmY0LHPzrbRvs4oHd_PQkXyiipsU"   
        Google_idToken: "344759916833-h3r1fju9hj53jd86d142tn44vta9vnsa.apps.googleusercontent.com"
-       VK_Token : "8aa0e4688aa0e4688aa0e468c289b3e7c988aa08aa0e468eeacccc451f7ca4b317d5ac1"
+       VK_Token : "VykbJYZq67IyNuwdZcEv"
     ports:
       - 80
     restart: always
